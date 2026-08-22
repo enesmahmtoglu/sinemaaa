@@ -371,9 +371,11 @@ body {
   box-shadow: 0 16px 30px -12px rgba(8, 26, 40, .6);
   position: relative;
 }
+/* Fotoğraf yatay çıktı (kare defter sayfası), polaroid çerçevesini
+   ona göre yatırdım — dikey çerçevede kenarlardan kırpılıyordu. */
 .polaroid__img {
-  width: min(248px, 58vw);
-  aspect-ratio: 4 / 5;
+  width: min(310px, 76vw);
+  aspect-ratio: 7 / 6;
   background: #DCD5C8 center/cover no-repeat;
   display: block;
 }
