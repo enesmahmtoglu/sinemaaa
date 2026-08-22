@@ -153,7 +153,19 @@ const PALET = {
 
   /* ---------------- oyun ---------------- */
 
-  document.getElementById('playBtn').addEventListener('click', () => Game.open());
+  const playBtn = document.getElementById('playBtn');
+  playBtn.addEventListener('click', () => Game.open());
+
+  /* Düğmedeki madalyona sahnelerdeki fokun aynısını çiziyorum —
+     ayrı bir ikon çizmek yerine aynı figürü kullanmak siteyi bir
+     arada tutuyor. */
+  (function fokMadalyon() {
+    const c = playBtn.querySelector('.play__fok');
+    if (!c) return;
+    const x = c.getContext('2d');
+    x.imageSmoothingEnabled = false;
+    Sprites.draw(x, Sprites.FOK, 0, 0, { scale: 1 });
+  })();
 
   /* ---------------- müzik ---------------- */
 
@@ -172,22 +184,56 @@ const PALET = {
     }, 40);
   }
 
+  function acikGoster() {
+    calisiyor = true;
+    sesBtn.setAttribute('aria-pressed', 'true');
+    sesBtn.setAttribute('aria-label', 'Müziği kapat');
+  }
+  function kapaliGoster() {
+    calisiyor = false;
+    sesBtn.setAttribute('aria-pressed', 'false');
+    sesBtn.setAttribute('aria-label', 'Müziği aç');
+  }
+
+  function calmayaBasla() {
+    return audio.play().then(() => { acikGoster(); fade(0.55); });
+  }
+
+  /* Müzik açılışta çalsın istiyoruz ama tarayıcılar sesli otomatik
+     oynatmayı engelliyor: kullanıcı sayfaya dokunmadan ses başlatmak
+     mümkün değil. O yüzden önce deniyoruz, engellenirse ilk dokunuşta
+     kendiliğinden giriyor — düğmeye basmaya gerek kalmıyor. */
+  let ilkDokunusBekliyor = false;
+  function ilkDokunusBagla() {
+    if (ilkDokunusBekliyor) return;
+    ilkDokunusBekliyor = true;
+    const basla = () => {
+      calmayaBasla().catch(() => {});
+      cikar();
+    };
+    const cikar = () => {
+      ilkDokunusBekliyor = false;
+      ['pointerdown', 'touchstart', 'keydown', 'wheel'].forEach(t =>
+        window.removeEventListener(t, basla, true));
+      track.removeEventListener('scroll', basla);
+    };
+    ['pointerdown', 'touchstart', 'keydown', 'wheel'].forEach(t =>
+      window.addEventListener(t, basla, { capture: true, once: true, passive: true }));
+    track.addEventListener('scroll', basla, { once: true, passive: true });
+  }
+
+  audio.preload = 'auto';
+  calmayaBasla().catch(() => { kapaliGoster(); ilkDokunusBagla(); });
+
   sesBtn.addEventListener('click', () => {
     if (!calisiyor) {
-      audio.play().then(() => {
-        calisiyor = true;
-        sesBtn.setAttribute('aria-pressed', 'true');
-        sesBtn.setAttribute('aria-label', 'Müziği kapat');
-        fade(0.55);
-      }).catch(() => {
+      calmayaBasla().catch(() => {
         sesBtn.setAttribute('aria-label', 'Müzik dosyası bulunamadı');
         sesBtn.style.opacity = '.45';
       });
     } else {
       fade(0, () => audio.pause());
-      calisiyor = false;
-      sesBtn.setAttribute('aria-pressed', 'false');
-      sesBtn.setAttribute('aria-label', 'Müziği aç');
+      kapaliGoster();
     }
   });
 
