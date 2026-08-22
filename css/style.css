@@ -1,0 +1,592 @@
+/* ---------------------------------------------------------------
+   27 Ağustos — jetonlar, dioramalar ve bir Boğaz geçişi
+   Palet: üç renk denizden (Enes), üç renk karadan (İpek).
+   --------------------------------------------------------------- */
+
+:root {
+  /* --- oyunun altı rengi --- */
+  --sea-red:    #B4382C;   /* baca kırmızısı */
+  --sea-blue:   #1C4A63;   /* boğaz lacisi   */
+  --sea-rust:   #8C5A38;   /* iskele pası    */
+  --land-green: #5C7F4E;   /* yıldız yeşili  */
+  --land-gold:  #DFAE3E;   /* çırağan sarısı */
+  --land-pink:  #E3A79E;   /* sedef pembe    */
+
+  /* --- nötrler: bilet kâğıdı ve mürekkep --- */
+  --paper:      #EFE6D6;
+  --paper-edge: #DED2BC;
+  --ink:        #17252E;
+  --ink-soft:   #55636B;
+
+  /* --- ritim --- */
+  --gap-xs: 4px;
+  --gap-s:  8px;
+  --gap-m:  16px;
+  --gap-l:  28px;
+  --gap-xl: 48px;
+
+  --panel-w: min(430px, 84vw);
+  --sea-line: 58%;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--sea-blue);
+}
+
+body {
+  font-family: "Newsreader", Georgia, serif;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+/* ============================ gökyüzü ============================ */
+
+#sky {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  display: block;
+}
+
+.noscript {
+  position: fixed;
+  inset: 0;
+  z-index: 9;
+  display: grid;
+  place-content: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+  background: var(--sea-blue);
+  color: var(--paper);
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+/* ============================ raylar ============================= */
+
+.track {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: stretch;
+  height: 100dvh;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  outline: none;
+}
+.track::-webkit-scrollbar { display: none; }
+
+.panel {
+  flex: 0 0 var(--panel-w);
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 clamp(12px, 3vw, 28px);
+  position: relative;
+}
+.panel--intro { flex-basis: min(560px, 100vw); }
+.panel--wide  { flex-basis: min(480px, 92vw); }
+.panel--final { flex-basis: min(520px, 96vw); }
+
+/* boşluk: rota başta ve sonda nefes alsın */
+.track::before,
+.track::after {
+  content: "";
+  flex: 0 0 max(2vw, 12px);
+}
+
+/* ============================ açılış ============================= */
+
+.intro {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gap-m);
+}
+
+.intro__line {
+  margin: 0;
+  font-size: clamp(15px, 4vw, 19px);
+  font-style: italic;
+  font-weight: 300;
+  color: #F3EFE6;
+  text-shadow: 0 1px 6px rgba(10, 30, 45, .45);
+  letter-spacing: .01em;
+}
+
+.intro__date {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: .88;
+  font-family: "Archivo", system-ui, sans-serif;
+  font-variation-settings: "wdth" 118, "wght" 780;
+  color: #FBF7EF;
+  text-transform: uppercase;
+  text-shadow: 0 3px 0 rgba(15, 40, 58, .28);
+}
+.intro__date span:first-child { font-size: clamp(84px, 26vw, 150px); letter-spacing: -.03em; }
+.intro__date span:last-child  { font-size: clamp(29px, 8.8vw, 50px); letter-spacing: .05em; margin-top: 2px; }
+
+.intro__meta {
+  margin: 0;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: clamp(10px, 2.9vw, 12.5px);
+  font-weight: 500;
+  letter-spacing: .06em;
+  color: #EAE0CE;
+  background: rgba(15, 37, 52, .5);
+  border: 1px solid rgba(239, 230, 214, .22);
+  padding: 7px 12px;
+  border-radius: 2px;
+  backdrop-filter: blur(3px);
+}
+
+.diorama--intro {
+  width: min(300px, 74vw);
+  margin-top: var(--gap-s);
+  filter: none;
+}
+
+.swipe {
+  position: absolute;
+  bottom: clamp(58px, 11vh, 92px);
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: rgba(247, 242, 232, .82);
+  white-space: nowrap;
+}
+.swipe__arrow {
+  display: inline-block;
+  font-size: 15px;
+  animation: nudge 2.1s cubic-bezier(.4, 0, .2, 1) infinite;
+}
+@keyframes nudge {
+  0%, 55%, 100% { transform: translateX(0);   opacity: .75; }
+  25%           { transform: translateX(7px); opacity: 1; }
+}
+
+/* ============================ duraklar =========================== */
+
+.stop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(10px, 2.4vh, 20px);
+  width: 100%;
+}
+
+.diorama {
+  width: min(320px, 82%);
+  height: auto;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 10px 14px rgba(9, 28, 42, .34));
+}
+
+/* --- bilet --- */
+
+.ticket {
+  width: 100%;
+  max-width: 380px;
+  background: var(--paper);
+  color: var(--ink);
+  padding: 15px 17px 17px;
+  position: relative;
+  border-radius: 2px;
+  box-shadow:
+    0 1px 0 var(--paper-edge),
+    0 14px 26px -10px rgba(8, 26, 40, .5);
+  /* biletin sağ kenarı yırtık gibi dursun */
+  clip-path: polygon(
+    0 0, 100% 0,
+    100% calc(100% - 9px), calc(100% - 5px) 100%,
+    0 100%
+  );
+}
+.ticket::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  top: 40px;
+  border-top: 1px dashed rgba(23, 37, 46, .26);
+}
+
+.ticket__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--sea-red);
+  padding-bottom: 13px;
+}
+.ticket__head span:last-child { color: var(--ink-soft); font-weight: 500; }
+
+.ticket__title {
+  margin: 13px 0 7px;
+  font-family: "Archivo", system-ui, sans-serif;
+  font-variation-settings: "wdth" 112, "wght" 700;
+  font-size: clamp(27px, 7.4vw, 37px);
+  line-height: .96;
+  letter-spacing: -.018em;
+}
+
+.ticket__body {
+  margin: 0;
+  font-size: clamp(14.5px, 3.7vw, 16.5px);
+  line-height: 1.5;
+  font-weight: 350;
+  color: #2C3B44;
+  text-wrap: pretty;
+}
+
+.ticket__action {
+  margin-top: 14px;
+  width: 100%;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--sea-blue);
+  border: none;
+  border-radius: 2px;
+  padding: 11px 12px;
+  cursor: pointer;
+  transition: background .18s ease, transform .12s ease;
+}
+.ticket__action:hover  { background: #245F7E; }
+.ticket__action:active { transform: translateY(1px); }
+
+/* sürpriz bileti: ters basılmış, mürekkep koyu */
+.ticket--secret {
+  background: var(--sea-blue);
+  color: var(--paper);
+  box-shadow: 0 1px 0 #143A4F, 0 14px 26px -10px rgba(8, 26, 40, .55);
+}
+.ticket--secret::before { border-top-color: rgba(239, 230, 214, .3); }
+.ticket--secret .ticket__head       { color: var(--land-gold); }
+.ticket--secret .ticket__head span:last-child { color: rgba(239, 230, 214, .6); }
+.ticket--secret .ticket__title {
+  font-size: clamp(46px, 13vw, 66px);
+  color: var(--land-gold);
+  line-height: 1;
+}
+.ticket--secret .ticket__body {
+  color: rgba(239, 230, 214, .78);
+  font-style: italic;
+}
+
+/* ============================ palet ============================== */
+
+.ticket--palette { max-width: 420px; }
+
+.palette {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap-m);
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(23, 37, 46, .26);
+}
+.palette__who {
+  margin: 0 0 9px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.swatches { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+.swatches li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  line-height: 1.2;
+  font-weight: 400;
+}
+.chip {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 1px;
+  box-shadow: inset 0 0 0 1px rgba(23, 37, 46, .18);
+}
+.chip__hex {
+  display: block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 9.5px;
+  letter-spacing: .04em;
+  color: var(--ink-soft);
+  margin-top: 1px;
+}
+
+/* ============================ son kare =========================== */
+
+.final {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(14px, 3vh, 24px);
+}
+
+.polaroid {
+  margin: 0;
+  background: #FBF8F1;
+  padding: 11px 11px 34px;
+  border-radius: 1px;
+  transform: rotate(-2.2deg);
+  box-shadow: 0 16px 30px -12px rgba(8, 26, 40, .6);
+  position: relative;
+}
+.polaroid__img {
+  width: min(248px, 58vw);
+  aspect-ratio: 4 / 5;
+  background: #DCD5C8 center/cover no-repeat;
+  display: block;
+}
+.polaroid__img::after {
+  content: "fotoğraf buraya";
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #9A9184;
+}
+.polaroid__img.is-loaded::after { content: none; }
+.polaroid__cap {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 9px;
+  text-align: center;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  letter-spacing: .18em;
+  color: #6E6459;
+}
+
+.final__copy { text-align: center; color: #F5F0E6; }
+.final__title {
+  margin: 0 0 8px;
+  font-family: "Archivo", system-ui, sans-serif;
+  font-variation-settings: "wdth" 112, "wght" 700;
+  font-size: clamp(25px, 7vw, 34px);
+  letter-spacing: -.015em;
+  text-shadow: 0 2px 10px rgba(10, 30, 45, .5);
+}
+.final__meta {
+  margin: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  line-height: 1.7;
+  letter-spacing: .05em;
+  color: rgba(245, 240, 230, .82);
+}
+.final__sign {
+  margin: 14px 0 0;
+  font-style: italic;
+  font-size: 16px;
+  color: rgba(245, 240, 230, .9);
+}
+
+/* ============================ ray + ses ========================== */
+
+.rail {
+  position: fixed;
+  left: 50%;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 8px 12px;
+  background: rgba(12, 32, 46, .42);
+  border: 1px solid rgba(239, 230, 214, .16);
+  border-radius: 100px;
+  backdrop-filter: blur(6px);
+}
+.rail__dot {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+}
+.rail__dot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(239, 230, 214, .38);
+  transition: background .2s ease, width .2s ease, height .2s ease;
+}
+.rail__dot:hover::before { background: rgba(239, 230, 214, .7); }
+.rail__dot.is-on::before {
+  background: var(--land-gold);
+  width: 9px; height: 9px;
+}
+/* duraklar arasındaki rota çizgisi */
+.rail__dot + .rail__dot { margin-left: -4px; }
+.rail__dot:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 60%;
+  width: 14px;
+  height: 1px;
+  background: rgba(239, 230, 214, .2);
+}
+
+.sound {
+  position: fixed;
+  top: max(16px, env(safe-area-inset-top));
+  right: 16px;
+  z-index: 3;
+  width: 40px; height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(239, 230, 214, .2);
+  background: rgba(12, 32, 46, .42);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+.sound__bars { display: flex; align-items: flex-end; gap: 3px; height: 15px; }
+.sound__bars i {
+  display: block;
+  width: 2.5px;
+  height: 5px;
+  background: rgba(239, 230, 214, .8);
+  border-radius: 1px;
+  transition: height .2s ease;
+}
+.sound[aria-pressed="true"] .sound__bars i { background: var(--land-gold); }
+.sound[aria-pressed="true"] .sound__bars i:nth-child(1) { animation: eq .9s  ease-in-out infinite; }
+.sound[aria-pressed="true"] .sound__bars i:nth-child(2) { animation: eq .62s ease-in-out infinite .1s; }
+.sound[aria-pressed="true"] .sound__bars i:nth-child(3) { animation: eq .78s ease-in-out infinite .2s; }
+@keyframes eq { 0%,100% { height: 4px; } 50% { height: 14px; } }
+.sound:not([aria-pressed="true"]) .sound__bars i:nth-child(2) { height: 10px; }
+
+/* ============================ oyun =============================== */
+
+.game {
+  position: fixed;
+  inset: 0;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  background: rgba(9, 25, 37, .78);
+  backdrop-filter: blur(4px);
+  padding: 16px;
+}
+.game[hidden] { display: none; }
+.game__box {
+  background: var(--paper);
+  padding: 12px;
+  border-radius: 3px;
+  width: min(440px, 100%);
+  box-shadow: 0 20px 50px -16px rgba(0, 0, 0, .7);
+}
+#gameCanvas {
+  width: 100%;
+  height: auto;
+  display: block;
+  image-rendering: pixelated;
+  border-radius: 2px;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+.game__hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 2px 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10.5px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+#gameDist { color: var(--sea-red); font-weight: 600; }
+.game__close {
+  margin-top: 10px;
+  width: 100%;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 9px;
+  border: 1px solid rgba(23, 37, 46, .25);
+  background: transparent;
+  color: var(--ink);
+  border-radius: 2px;
+  cursor: pointer;
+}
+.game__close:hover { background: rgba(23, 37, 46, .07); }
+
+/* ============================ erişilebilirlik ==================== */
+
+:focus-visible {
+  outline: 2px solid var(--land-gold);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+  .track { scroll-behavior: auto; }
+}
+
+/* geniş ekran: diorama ve bilet yan yana durmasın, dikey akış daha okunur —
+   ama biletin genişliğini artırıp yazıyı biraz büyütelim */
+@media (min-width: 900px) {
+  :root { --panel-w: 460px; }
+  .diorama { width: min(340px, 84%); }
+}
+
+/* alçak ekran (yatay telefon): diorama küçülsün ki bilet kesilmesin */
+@media (max-height: 620px) {
+  .diorama { width: min(228px, 58%); }
+  .ticket__body { font-size: 13.5px; }
+  .swipe { bottom: 48px; }
+}
