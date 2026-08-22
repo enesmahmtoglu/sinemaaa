@@ -384,8 +384,12 @@ body {
   line-height: 1;
 }
 .ticket--secret .ticket__body {
-  color: rgba(239, 230, 214, .78);
-  font-style: italic;
+  /* Metin büyük harfle yazıldı; italik serifle birlikte okunmuyordu. */
+  color: rgba(239, 230, 214, .86);
+  font-family: "Archivo", system-ui, sans-serif;
+  font-variation-settings: "wdth" 104, "wght" 600;
+  font-size: clamp(15px, 4vw, 17px);
+  letter-spacing: .02em;
 }
 
 /* ============================ palet ============================== */
