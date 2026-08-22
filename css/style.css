@@ -482,22 +482,23 @@ body {
   background: rgba(12, 32, 46, .42);
   backdrop-filter: blur(6px);
   cursor: pointer;
+  padding: 0;
 }
-.sound__bars { display: flex; align-items: flex-end; gap: 3px; height: 15px; }
-.sound__bars i {
-  display: block;
-  width: 2.5px;
-  height: 5px;
-  background: rgba(239, 230, 214, .8);
-  border-radius: 1px;
-  transition: height .2s ease;
+.sound__note {
+  width: 17px;
+  height: 17px;
+  fill: rgba(239, 230, 214, .82);
+  transition: fill .2s ease;
 }
-.sound[aria-pressed="true"] .sound__bars i { background: var(--land-gold); }
-.sound[aria-pressed="true"] .sound__bars i:nth-child(1) { animation: eq .9s  ease-in-out infinite; }
-.sound[aria-pressed="true"] .sound__bars i:nth-child(2) { animation: eq .62s ease-in-out infinite .1s; }
-.sound[aria-pressed="true"] .sound__bars i:nth-child(3) { animation: eq .78s ease-in-out infinite .2s; }
-@keyframes eq { 0%,100% { height: 4px; } 50% { height: 14px; } }
-.sound:not([aria-pressed="true"]) .sound__bars i:nth-child(2) { height: 10px; }
+.sound[aria-pressed="true"] .sound__note {
+  fill: var(--land-gold);
+  animation: notaSalla 1.15s ease-in-out infinite;
+  transform-origin: 30% 75%;
+}
+@keyframes notaSalla {
+  0%, 100% { transform: rotate(-7deg) translateY(0); }
+  50%      { transform: rotate(7deg)  translateY(-1.5px); }
+}
 
 /* ============================ oyun =============================== */
 
