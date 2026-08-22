@@ -708,3 +708,63 @@ body {
   .ticket__body { font-size: 13.5px; }
   .swipe { bottom: 48px; }
 }
+
+/* Telefon yan çevrildiğinde yükseklik 360 pikselin altına düşüyor;
+   bilet, diorama ve oyun kutusu ekrandan taşıyordu. Bu boyda her şeyi
+   sıkıştırıyorum — plan yine tek bakışta okunuyor. */
+@media (max-height: 470px) {
+  .diorama { width: min(176px, 32%); }
+  .diorama--intro { width: min(180px, 30vw); }
+  .stop { gap: 6px; }
+
+  .ticket { padding: 9px 12px 11px; }
+  .ticket::before { top: 27px; }
+  .ticket__head { font-size: 9px; padding-bottom: 7px; }
+  .ticket__title { font-size: 21px; margin: 8px 0 4px; }
+  .ticket__body { font-size: 12.5px; line-height: 1.4; }
+  .ticket--secret .ticket__title { font-size: 34px; }
+  .ticket--secret .ticket__body { font-size: 13px; }
+
+  .play { margin-top: 10px; padding: 6px 11px 6px 6px; column-gap: 9px; }
+  .play__madalyon { width: 32px; height: 32px; }
+  .play__fok { width: 23px; height: 18px; }
+  .play__baslik { font-size: 14px; }
+  .play__alt { display: none; }
+  .play__ok { width: 21px; height: 21px; }
+
+  .palette { margin-top: 10px; padding-top: 9px; gap: 10px; }
+  .palette__who { font-size: 9px; margin-bottom: 6px; }
+  .swatches { gap: 5px; }
+  .swatches li { font-size: 11px; }
+  .chip { width: 15px; height: 15px; }
+  .chip__hex { font-size: 8px; }
+
+  .intro { gap: 8px; }
+  .intro__line { font-size: 13px; }
+  .intro__date span:first-child { font-size: 54px; }
+  .intro__date span:last-child  { font-size: 21px; }
+  .intro__meta { font-size: 9px; padding: 5px 9px; }
+  .swipe { bottom: 32px; font-size: 9px; }
+
+  .final { gap: 8px; }
+  .polaroid { padding: 7px 7px 21px; }
+  .polaroid__img { width: min(196px, 30vw); }
+  .polaroid__cap { font-size: 9px; bottom: 6px; }
+  .final__title { font-size: 20px; margin-bottom: 4px; }
+  .final__meta { font-size: 9px; line-height: 1.5; }
+  .final__sign { font-size: 13px; margin-top: 8px; }
+
+  .rail { bottom: 6px; padding: 5px 9px; }
+  .rail__dot { width: 17px; height: 17px; }
+  .sound { width: 32px; height: 32px; top: 8px; right: 8px; }
+  .sound__note { width: 14px; height: 14px; }
+
+  .game { padding: 6px; }
+  .game__box { padding: 6px; }
+  .game__screen { display: flex; justify-content: center; }
+  #gameCanvas { width: auto; max-width: 100%; max-height: calc(100dvh - 96px); }
+  .game__hud { font-size: 9px; margin-top: 6px; min-height: 12px; }
+  .game__hud #gameMsg { font-size: 10px; }
+  .game__btns { margin-top: 6px; }
+  .game__again, .game__close { padding: 8px; font-size: 10px; }
+}
