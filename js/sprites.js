@@ -1,87 +1,91 @@
 /* sprites.js — elle yazılmış piksel figürler.
  *
- * Her figür bir satır dizisi. Her harf bir piksel, '.' saydam.
- * Hazır görsel indirmek yerine böyle yazdım: dosya birkaç kilobayt
- * kalıyor ve rengi paletle beraber değiştirebiliyorum.
+ * Her figür bir satır dizisi, her harf bir piksel, '.' saydam.
+ * Fok ile rakun masadaki iki peluşa bakılarak çizildi: fok tombul ve
+ * bembeyaz, gözleri iri; rakunun maskesi koyu, yüzü ve göbeği krem.
  */
 
 const Sprites = (() => {
 
   const PAL = {
     /* fok */
-    w: '#F2EBDD',  s: '#DBD0BC',  e: '#2B2119',  p: '#C98F84',
+    w: '#FBF8F3',  s: '#E2D9CC',  e: '#1A1614',
     /* rakun */
-    g: '#7E8892',  G: '#5E6975',  d: '#2A2C31',  l: '#DCDFE2',  n: '#1E1F22',
+    g: '#8A7A6C',  G: '#6E6055',  d: '#4A3E36',  l: '#EFE7DA',  L: '#D8CCBC',  n: '#241E1A',
     /* martı */
-    m: '#F7F3EA',  M: '#CFC7B6',
-    /* hediye */
-    r: '#B4382C',  R: '#8E2A21',  k: '#DFAE3E',
+    m: '#F7F3EA',
+    /* metro levhası */
+    v: '#0A2A66',  B: '#FFFFFF',  K: '#E1051E',
   };
 
-  /* --- fok: önden, tombul, iki yüzgeç --- */
+  /* --- fok: önden, tombul, iki yüzgeç öne uzanmış --- */
   const FOK = [
-    '....wwwww....',
-    '..wwwwwwwww..',
-    '.wwwwwwwwwss.',
-    '.wwewwwwwews.',
-    '.wwwwwpwwwws.',
-    '.wwwwwwwwwss.',
-    '..wwwwwwwss..',
-    '..swwwwwwss..',
-    '.sswwwwwwwss.',
-    '..ss.....ss..',
+    '.....wwwwwww.....',
+    '...wwwwwwwwwww...',
+    '..wwwwwwwwwwwww..',
+    '.wwwwwwwwwwwwwss.',
+    '.wwweewwwwweewss.',
+    '.wwweewwwwweewss.',
+    '.wwwwwweeewwwwss.',
+    '.wwwwwwwwwwwwwss.',
+    '..wwwwwwwwwwwss..',
+    '..wwwwwwwwwwwss..',
+    '..wwwwwwwwwwwss..',
+    '.wwwwwwwwwwwwwss.',
+    'ww..wwwwwwwww..ss',
   ];
 
-  /* --- rakun: maskesi, çizgili kuyruğu sağda --- */
+  /* --- rakun: kulakları iri, maskesi koyu, göbeği krem --- */
   const RAKUN = [
-    '..dd.....dd..',
-    '..gggg.gggg..',
-    '.ggggggggggg.',
-    '.gglllllllgg.',
-    '.gddldddlddg.',
-    '.gglllllllgg.',
-    '.gglllnlllgg.',
-    '.ggglllllggg.',
-    '..gggggggGG..',
-    '..gggggggGd..',
-    '..ggggggGdl..',
-    '..gggggGdld..',
-    '...ggg..dld..',
+    '..GGG.......GGG..',
+    '.GGGGG.....GGGGG.',
+    '.GLLLG.....GLLLG.',
+    '..ggggggggggggg..',
+    '.ggggggggggggggg.',
+    '.ggglllllllllggg.',
+    '.ggdddllllldddgg.',
+    '.ggdnndllldnndgg.',
+    '.ggdddllllldddgg.',
+    '.gglllllllllllgg.',
+    '.ggllllnnnllllgg.',
+    '..gglllllllllgg..',
+    '.gggglllllllgggg.',
+    '.ggglllllllllggg.',
+    'gg.glllllllllg.gg',
+    '.LLLLgggggggLLLL.',
   ];
 
-  /* --- martı: uzaktan üç piksellik bir çentik --- */
+  /* --- martı: uzaktan iki piksellik bir çentik --- */
   const MARTI = [
     'mm...mm',
     '..mmm..',
   ];
+
+  /* --- martı, kanat aşağıda --- */
   const MARTI2 = [
     '..m.m..',
     '.mmmmm.',
   ];
 
-  /* --- metro levhası: kırmızı zemin, beyaz M --- */
-  const M4 = [
-    'rrrrrrrrr',
-    'rrrrrrrrr',
-    'rrwrrrwrr',
-    'rrwwrwwrr',
-    'rrwrwrwrr',
-    'rrwrrrwrr',
-    'rrwrrrwrr',
-    'rrrrrrrrr',
-    'rRRRRRRRr',
-  ];
-
-  /* --- hediye kutusu: kurdeleli --- */
-  const KUTU = [
-    '...kk...',
-    '..kkkk..',
-    'rrrkkrrr',
-    'RRRkkRRR',
-    'rrrkkrrr',
-    'rrrkkrrr',
-    'RRRkkRRR',
-    'RRRRRRRR',
+  /* --- metro levhası: lacivert daire, beyaz M, kırmızı ok --- */
+  const METRO = [
+    '....vvvvv....',
+    '..vvvvvvvvv..',
+    '.vBBvvvvvBBv.',
+    'vvBBBvvvBBBvv',
+    'vvBBBBvBBBBvv',
+    'vvBBKKKKKBBvv',
+    'vvBBKKKKKBBvv',
+    'vvBBKKKKKBBvv',
+    'vvBBKKKKKBBvv',
+    '.vBBKKKKKBBv.',
+    'KKKKKKKKKKKKK',
+    '.KKKKKKKKKKK.',
+    '..KKKKKKKKK..',
+    '...KKKKKKK...',
+    '....KKKKK....',
+    '.....KKK.....',
+    '......K......',
   ];
 
   function draw(ctx, art, x, y, opts = {}) {
@@ -118,5 +122,5 @@ const Sprites = (() => {
     }
   }
 
-  return { FOK, RAKUN, MARTI, MARTI2, M4, KUTU, PAL, draw, width, height, shadow };
+  return { FOK, RAKUN, MARTI, MARTI2, METRO, PAL, draw, width, height, shadow };
 })();

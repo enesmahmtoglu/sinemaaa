@@ -64,7 +64,7 @@ const Game = (() => {
     fok.vy *= 0.90;
     fok.y += fok.vy * dt;
     if (fok.y < SURF - 7) { fok.y = SURF - 7; fok.vy = 0; }
-    if (fok.y > H - 12)   { fok.y = H - 12;   fok.vy = 0; }
+    if (fok.y > H - 15)   { fok.y = H - 15;   fok.vy = 0; }
 
     // engeller
     spawnAt -= speed * dt;
@@ -75,11 +75,11 @@ const Game = (() => {
     for (const e of engel) {
       e.x -= speed * dt;
       if (fok.hit <= 0 &&
-          e.x < 58 && e.x + e.w > 42 &&
-          fok.y + 8 > e.y && fok.y < e.y + e.h) {
+          e.x < 59 && e.x + e.w > 46 &&
+          fok.y + 11 > e.y && fok.y + 2 < e.y + e.h) {
         fok.hit = 0.9;
         speed = Math.max(34, speed * 0.55);
-        patlat(50, fok.y + 4, e.tip === 'vapur' ? COL.beyaz : COL.pembe, 8);
+        patlat(52, fok.y + 6, e.tip === 'vapur' ? COL.beyaz : COL.pembe, 8);
         msgEl.textContent = e.tip === 'vapur' ? 'eh, vapurla da gideriz' : 'denizanası, aman';
       }
     }
@@ -173,7 +173,7 @@ const Game = (() => {
     ctx.fillStyle = 'rgba(255,255,255,0.4)';
     for (let i = 0; i < 4; i++) {
       const bx = 42 - i * 7 - ((t * 40) % 7);
-      ctx.fillRect(Math.round(bx), fy + 5 + (i % 2), 2, 1);
+      ctx.fillRect(Math.round(bx), fy + 7 + (i % 2), 2, 1);
     }
 
     for (const p of parts) { ctx.fillStyle = p.c; ctx.fillRect(Math.round(p.x), Math.round(p.y), 2, 2); }

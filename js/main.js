@@ -16,12 +16,12 @@ const CONFIG = {
 const PALET = {
   enes: [
     { ad: 'Baca kırmızısı', hex: '#B4382C' },
-    { ad: 'Boğaz lacisi',   hex: '#1C4A63' },
+    { ad: 'Çırağan sarısı', hex: '#DFAE3E' },
     { ad: 'İskele pası',    hex: '#8C5A38' },
   ],
   ipek: [
     { ad: 'Yıldız yeşili',  hex: '#5C7F4E' },
-    { ad: 'Çırağan sarısı', hex: '#DFAE3E' },
+    { ad: 'Boğaz lacisi',   hex: '#1C4A63' },
     { ad: 'Sedef pembe',    hex: '#E3A79E' },
   ],
 };

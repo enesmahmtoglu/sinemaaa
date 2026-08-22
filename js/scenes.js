@@ -1,6 +1,6 @@
 /* scenes.js — sekiz izometrik diorama.
  *
- * Her sahne 168x112'lik minik bir tuvale çizilir. Kural: her şey
+ * Her sahne 124x84'lük minik bir tuvale çizilir. Kural: her renk
  * paletin altı renginden ya da onların açığından/koyusundan türer.
  */
 
@@ -36,9 +36,15 @@ const Scenes = (() => {
     Iso.box(ctx, ox, oy, 0, 0, -h, gw, gd, h, side, { top: top });
   }
 
-  /* Su: koyu taban + üstünde kayan açık şeritler. Şeritler karo
-     boyunca değil, ekran satırı boyunca hareket ediyor; izometrik
-     dalganın böyle okunduğunu deneyerek buldum. */
+  /* Bir figürü ızgara noktasına oturt: yatayda ortalar, ayakları
+     noktanın hizasına gelir. Her sahnede elle kaydırmaktan kurtardı. */
+  function figure(ctx, art, ox, oy, x, y, z, dy) {
+    const p = Iso.project(x, y, z);
+    const w = Sprites.width(art), h = Sprites.height(art);
+    Sprites.draw(ctx, art, ox + p[0] - Math.floor(w / 2), oy + p[1] - h + 2 + (dy || 0));
+  }
+
+  /* Su: koyu taban + üstünde kayan açık şeritler. */
   function water(ctx, ox, oy, gw, gd, t, base) {
     base = base || C.seaBlue;
     Iso.tile(ctx, ox, oy, 0, 0, 0, gw, gd, base);
@@ -76,7 +82,7 @@ const Scenes = (() => {
     }
   }
 
-  /* Karakterlerin ufak nefesi: her yarım saniyede bir piksel oynuyor */
+  /* Karakterlerin ufak nefesi: yarım saniyede bir piksel oynuyor */
   function bob(t, off) { return Math.round(Math.sin(t * 1.8 + (off || 0)) * 0.5 - 0.5); }
 
   /* ---------- sahneler ---------- */
@@ -84,13 +90,12 @@ const Scenes = (() => {
   const list = {
 
     /* açılış: denizin üstünde bir şamandıra ve bekleyen fok.
-       Arka planda zaten deniz var, buraya ikinci bir su karosu koymak
-       yamalı gösteriyordu — sadece figürleri bırakıyorum. */
+       Arka planda zaten deniz var, buraya ikinci bir su karosu
+       koymak yamalı gösteriyordu. */
     intro(ctx, w, h, t) {
-      const ox = w / 2, oy = 18;
+      const ox = w / 2, oy = 20;
       const dalga = Math.round(Math.sin(t * 1.1) * 1.2);
 
-      // şamandıra
       const b = Iso.project(4.6, 1.4, 0);
       Iso.box(ctx, ox, oy + dalga, 4.6, 1.4, 0, 0.55, 0.55, 1.5, C.seaRed);
       Iso.box(ctx, ox, oy + dalga, 4.52, 1.32, 1.5, 0.72, 0.72, 0.25, '#2E3840');
@@ -98,96 +103,88 @@ const Scenes = (() => {
 
       // fok: sadece sırtı ve kafası suyun üstünde
       const p = Iso.project(2.0, 2.8, 0);
-      const fy = oy + p[1] - 9 + Math.round(Math.sin(t * 1.5) * 1.2);
+      const fh = Sprites.height(Sprites.FOK);
+      const fy = oy + p[1] - fh + 6 + Math.round(Math.sin(t * 1.5) * 1.2);
+      const fx = ox + p[0] - Math.floor(Sprites.width(Sprites.FOK) / 2);
       ctx.save();
       ctx.beginPath();
-      ctx.rect(0, 0, w, fy + 8);
+      ctx.rect(0, 0, w, fy + fh - 3);
       ctx.clip();
-      Sprites.draw(ctx, Sprites.FOK, ox + p[0], fy, { scale: 1 });
+      Sprites.draw(ctx, Sprites.FOK, fx, fy, { scale: 1 });
       ctx.restore();
-      // suya değdiği yerde halka
-      Iso.rect(ctx, ox + p[0] - 2, fy + 8, 17, 1, 'rgba(191,224,230,0.45)');
+      Iso.rect(ctx, fx - 2, fy + fh - 3, 21, 1, 'rgba(191,224,230,0.45)');
 
       gulls(ctx, w, t, 2, 2);
     },
 
-    /* 01 — Kadıköy: turnikeler, M4 tabelası, aşağı inen merdiven */
+    /* 01 — Kadıköy: turnikeler, metro levhası, iskeleye inen merdiven.
+       Merdiven önce havada asılı kalıyordu; artık peronun ön kenarından
+       başlayıp basamak basamak aşağı iniyor. */
     kadikoy(ctx, w, h, t) {
-      const ox = w / 2, oy = 34;
-      plinth(ctx, ox, oy, 6, 6, C.stone, Iso.shade(C.stone, -0.3));
-      // zemin çizgisi: yönlendirme şeridi
-      Iso.tile(ctx, ox, oy, 0.4, 3.5, 0.02, 5.2, 0.18, C.gold);
+      const ox = w / 2, oy = 32;
+      plinth(ctx, ox, oy, 6, 4.6, C.stone, Iso.shade(C.stone, -0.3));
+
+      // yönlendirme şeridi
+      Iso.tile(ctx, ox, oy, 0.4, 4.05, 0.02, 5.2, 0.18, C.gold);
 
       // turnike sırası
       for (let i = 0; i < 3; i++) {
-        const y = 0.8 + i * 1.5;
-        Iso.box(ctx, ox, oy, 1.4, y, 0, 0.9, 0.75, 1.05, '#5D6970');
-        Iso.box(ctx, ox, oy, 1.4, y, 1.05, 0.9, 0.75, 0.12, '#8894 9C'.replace(' ', ''));
-        // kanatlar
-        Iso.box(ctx, ox, oy, 2.3, y + 0.18, 0.55, 0.75, 0.1, 0.35, C.seaRed);
+        const y = 0.6 + i * 1.35;
+        Iso.box(ctx, ox, oy, 1.2, y, 0, 0.9, 0.7, 1.05, '#5D6970');
+        Iso.box(ctx, ox, oy, 1.2, y, 1.05, 0.9, 0.7, 0.12, '#88949C');
+        Iso.box(ctx, ox, oy, 2.1, y + 0.16, 0.55, 0.7, 0.1, 0.35, C.seaRed);
       }
 
-      // M4 direği ve levhası
-      Iso.box(ctx, ox, oy, 4.7, 0.7, 0, 0.2, 0.2, 3.0, '#3C4750');
-      const lp = Iso.project(4.8, 0.8, 3.0);
-      Sprites.draw(ctx, Sprites.M4, ox + lp[0] - 4, oy + lp[1] - 9, { scale: 1 });
+      // metro direği ve levhası
+      Iso.box(ctx, ox, oy, 5.0, 0.7, 0, 0.18, 0.18, 2.4, '#3C4750');
+      const lp = Iso.project(5.09, 0.79, 2.4);
+      Sprites.draw(ctx, Sprites.METRO,
+        ox + lp[0] - Math.floor(Sprites.width(Sprites.METRO) / 2),
+        oy + lp[1] - Sprites.height(Sprites.METRO) + 1, { scale: 1 });
 
-      // iskeleye inen merdiven
-      for (let i = 0; i < 3; i++) {
-        Iso.box(ctx, ox, oy, 0.3, 4.5 + i * 0.5, -0.4 * i, 3.4, 0.5, 0.3, C.stone);
+      // iskeleye inen basamaklar: her biri peronun altına kadar iniyor
+      const bas = [[4.6, 1.30, 0.5], [5.1, 1.00, 0.5], [5.6, 0.70, 0.5]];
+      for (const [y, yuk, d] of bas) {
+        Iso.box(ctx, ox, oy, 0.7, y, -1.6, 4.2, d, yuk, Iso.shade(C.stone, -0.16),
+                { top: Iso.shade(C.stone, 0.1) });
       }
 
-      // fok bekliyor
-      const p = Iso.project(3.2, 4.0, 0);
-      Sprites.shadow(ctx, ox + p[0] + 6, oy + p[1] + 1, 7, 2);
-      Sprites.draw(ctx, Sprites.FOK, ox + p[0], oy + p[1] - 10 + bob(t), { scale: 1 });
-      gulls(ctx, w, t, 1, 6);
+      figure(ctx, Sprites.FOK, ox, oy, 4.2, 3.3, 0, bob(t));
+      gulls(ctx, w, t, 1, 4);
     },
 
-    /* 02 — Vapur: gövde, kırmızı baca, güvertede ikisi */
+    /* 02 — Vapur: gövde, kırmızı baca, ön güvertede ikisi */
     vapur(ctx, w, h, t) {
       const ox = w / 2 - 6, oy = 36;
       water(ctx, ox, oy, 8, 6, t);
-      const sway = Math.round(Math.sin(t * 0.9) * 1.2);
-      const oyy = oy + sway;
+      const oyy = oy + Math.round(Math.sin(t * 0.9) * 1.2);
 
-      // gövde
       Iso.box(ctx, ox, oyy, 0.8, 1.4, 0, 5.4, 2.6, 1.1, '#2B3A44');
       Iso.box(ctx, ox, oyy, 0.8, 1.4, 1.1, 5.4, 2.6, 0.9, C.hull);
-      // güverte
       Iso.tile(ctx, ox, oyy, 0.8, 1.4, 2.0, 5.4, 2.6, C.deck);
-      // üst kat
-      Iso.box(ctx, ox, oyy, 1.5, 1.75, 2.0, 3.6, 1.9, 1.2, C.hull);
-      Iso.tile(ctx, ox, oyy, 1.5, 1.75, 3.2, 3.6, 1.9, '#D9CDB6');
-      // pencereler
+      Iso.box(ctx, ox, oyy, 1.5, 1.6, 2.0, 3.6, 1.7, 1.2, C.hull);
+      Iso.tile(ctx, ox, oyy, 1.5, 1.6, 3.2, 3.6, 1.7, '#D9CDB6');
       for (let i = 0; i < 5; i++) {
-        faceY(ctx, ox, oyy, 3.65, 1.75 + i * 0.66, 2.35, 2.15 + i * 0.66, 2.9, '#2D4E5F');
+        faceY(ctx, ox, oyy, 3.3, 1.75 + i * 0.66, 2.35, 2.15 + i * 0.66, 2.9, '#2D4E5F');
       }
-      // baca — kırmızı, siyah bantlı
-      Iso.box(ctx, ox, oyy, 2.9, 2.35, 3.2, 0.72, 0.72, 1.5, C.seaRed);
-      Iso.box(ctx, ox, oyy, 2.86, 2.31, 4.5, 0.8, 0.8, 0.3, '#22282C');
-      // bayrak direği
+      Iso.box(ctx, ox, oyy, 2.9, 2.2, 3.2, 0.72, 0.72, 1.5, C.seaRed);
+      Iso.box(ctx, ox, oyy, 2.86, 2.16, 4.5, 0.8, 0.8, 0.3, '#22282C');
       Iso.box(ctx, ox, oyy, 5.9, 2.5, 1.9, 0.14, 0.14, 1.6, '#4A555E');
       Iso.box(ctx, ox, oyy, 5.6, 2.5, 3.1, 0.5, 0.06, 0.35, C.seaRed);
 
-      // güvertede fok + rakun
-      const a = Iso.project(1.9, 3.75, 2.0), b = Iso.project(3.2, 3.8, 2.0);
-      Sprites.draw(ctx, Sprites.FOK,   ox + a[0] - 5, oyy + a[1] - 10 + bob(t),      { scale: 1 });
-      Sprites.draw(ctx, Sprites.RAKUN, ox + b[0] - 5, oyy + b[1] - 13 + bob(t, 1.4), { scale: 1 });
+      figure(ctx, Sprites.FOK,   ox, oyy, 1.0, 3.9, 2.0, bob(t));
+      figure(ctx, Sprites.RAKUN, ox, oyy, 4.0, 3.4, 2.0, bob(t, 1.4));
 
       gulls(ctx, w, t, 3, 2);
     },
 
-    /* 03 — Beşiktaş: iskele, sahil binaları, yokuş */
+    /* 03 — Beşiktaş: iskele, sahil binaları, ikisi de burada */
     besiktas(ctx, w, h, t) {
-      const ox = w / 2 - 3, oy = 34;
+      const ox = w / 2 - 3, oy = 32;
       water(ctx, ox, oy, 7, 6, t);
-      // iskele platformu
       plinth(ctx, ox, oy, 4.6, 6, C.stone, Iso.shade(C.stone, -0.32), 1.2);
-      // iskele babaları
       for (let i = 0; i < 3; i++) Iso.box(ctx, ox, oy, 4.7, 0.7 + i * 2, -0.2, 0.36, 0.36, 0.8, C.seaRust);
 
-      // arkada binalar, farklı yükseklik ve tonda
       const blds = [
         [0.2, 0.2, 1.5, 1.4, 3.4, C.stone],
         [1.9, 0.1, 1.3, 1.2, 4.6, '#D6C7AC'],
@@ -200,23 +197,19 @@ const Scenes = (() => {
           faceY(ctx, ox, oy, y + bd, x + 0.25, 0.5 + r * 1.05, x + bw - 0.25, 1.0 + r * 1.05, '#3D5665');
         }
       }
-      // yokuş: yukarı çıkan yol
       Iso.tile(ctx, ox, oy, 1.5, 3.3, 0.03, 0.9, 2.6, Iso.shade(C.stone, -0.14));
 
-      const p = Iso.project(2.8, 3.6, 0);
-      Sprites.shadow(ctx, ox + p[0] + 6, oy + p[1] + 1, 7, 2);
-      Sprites.draw(ctx, Sprites.RAKUN, ox + p[0], oy + p[1] - 13 + bob(t), { scale: 1 });
+      figure(ctx, Sprites.RAKUN, ox, oy, 1.6, 4.4, 0, bob(t));
+      figure(ctx, Sprites.FOK,   ox, oy, 4.0, 3.4, 0, bob(t, 1.2));
       gulls(ctx, w, t, 2, 3);
     },
 
-    /* 05 — Yıldız Parkı: eğimli yeşil, patika, ağaçtaki rakun */
+    /* 05 — Yıldız Parkı: kademeli yeşil, patika, ağaçlar */
     yildiz(ctx, w, h, t) {
       const ox = w / 2, oy = 32;
-      // eğim: üç kademe
       Iso.box(ctx, ox, oy, 0, 0, -1.6, 6, 6, 1.6, Iso.shade(C.green, -0.42), { top: C.green });
       Iso.box(ctx, ox, oy, 0.4, 0.4, 0, 4.2, 4.2, 0.7, Iso.shade(C.green, -0.3), { top: Iso.shade(C.green, 0.12) });
       Iso.box(ctx, ox, oy, 1.1, 1.1, 0.7, 2.6, 2.6, 0.6, Iso.shade(C.green, -0.22), { top: Iso.shade(C.green, 0.22) });
-      // patika
       Iso.tile(ctx, ox, oy, 4.8, 0.6, 0.03, 0.7, 5.0, '#C0AE8C');
       Iso.tile(ctx, ox, oy, 1.6, 5.0, 0.03, 3.4, 0.6, '#C0AE8C');
 
@@ -225,106 +218,111 @@ const Scenes = (() => {
       tree(ctx, ox, oy, 0.3, 3.4, 1.0, '#557A47');
       tree(ctx, ox, oy, 3.6, 0.5, 0.85, '#66894F');
 
-      const p = Iso.project(2.0, 5.2, 0);
-      Sprites.shadow(ctx, ox + p[0] + 6, oy + p[1] + 1, 7, 2);
-      Sprites.draw(ctx, Sprites.RAKUN, ox + p[0], oy + p[1] - 13 + bob(t), { scale: 1 });
-      const q = Iso.project(4.7, 2.4, 0);
-      Sprites.shadow(ctx, ox + q[0] + 4, oy + q[1] + 1, 6, 2);
-      Sprites.draw(ctx, Sprites.FOK, ox + q[0] - 2, oy + q[1] - 10 + bob(t, 2.2), { scale: 1 });
+      figure(ctx, Sprites.RAKUN, ox, oy, 2.0, 5.2, 0, bob(t));
+      figure(ctx, Sprites.FOK,   ox, oy, 5.1, 2.6, 0, bob(t, 2.2));
     },
 
-    /* 06 — Sürpriz: kaidenin üstünde duran kapalı kutu.
-       Önce piksel bir çıkartma olarak çizmiştim, sahnenin geri kalanının
-       yanında oyuncak gibi kalıyordu; izometrik kutuya çevirdim. */
+    /* 06 — Sürpriz: kaidenin üstünde havada duran hediye.
+       İlk hâli piksel bir çıkartmaydı, hediye kutusuna benzemiyordu:
+       artık kapağı taşan, dört yanından kurdele geçen, fiyonklu bir
+       kutu — hepsi izometrik. */
     surpriz(ctx, w, h, t) {
-      const ox = w / 2, oy = 38;
+      const ox = w / 2, oy = 34;
       plinth(ctx, ox, oy, 5, 5, Iso.shade(C.seaBlue, 0.16), Iso.shade(C.seaBlue, -0.28), 1.4);
-      Iso.box(ctx, ox, oy, 1.5, 1.5, 0, 2.0, 2.0, 0.9, Iso.shade(C.seaBlue, 0.04));
+      Iso.box(ctx, ox, oy, 1.4, 1.4, 0, 2.2, 2.2, 0.85, Iso.shade(C.seaBlue, 0.04));
 
       const lift = Math.round(Math.sin(t * 1.4) * 2);
-      const yoy = oy - 4 + lift;                 // kutu havada duruyor
-      const g = Iso.project(2.5, 2.5, 0.9);
-      Sprites.shadow(ctx, ox + g[0], oy + g[1] - 1, 11 - Math.abs(lift), 3, 'rgba(8,26,40,0.30)');
+      const yoy = oy - 5 + lift;
+      const g = Iso.project(2.5, 2.5, 0.85);
+      Sprites.shadow(ctx, ox + g[0], oy + g[1] - 1, 12 - Math.abs(lift), 3, 'rgba(8,26,40,0.32)');
 
-      // kutu gövdesi
-      Iso.box(ctx, ox, yoy, 1.75, 1.75, 0.9, 1.5, 1.5, 1.15, C.seaRed);
-      // kurdele: iki yönde şerit
-      Iso.box(ctx, ox, yoy, 2.35, 1.75, 0.9, 0.3, 1.5, 1.17, C.gold);
-      Iso.box(ctx, ox, yoy, 1.75, 2.35, 0.9, 1.5, 0.3, 1.17, C.gold);
-      // kapak
-      Iso.box(ctx, ox, yoy, 1.6, 1.6, 2.05, 1.8, 1.8, 0.3, Iso.shade(C.seaRed, 0.12));
-      // fiyonk
-      Iso.box(ctx, ox, yoy, 2.25, 2.25, 2.35, 0.5, 0.5, 0.32, C.gold);
-      Iso.box(ctx, ox, yoy, 2.05, 2.42, 2.42, 0.4, 0.24, 0.18, Iso.shade(C.gold, 0.2));
-      Iso.box(ctx, ox, yoy, 2.42, 2.05, 2.42, 0.24, 0.4, 0.18, Iso.shade(C.gold, 0.2));
+      const x0 = 1.35, y0 = 1.35, s = 2.3, z0 = 0.9, hh = 1.6;
+      const kur = C.gold, kurK = Iso.shade(C.gold, -0.22);
+
+      // gövde
+      Iso.box(ctx, ox, yoy, x0, y0, z0, s, s, hh, C.seaRed);
+      // kurdele: iki görünen yüzden de geçiyor
+      faceY(ctx, ox, yoy, y0 + s, x0 + s / 2 - 0.22, z0, x0 + s / 2 + 0.22, z0 + hh, kur);
+      faceX(ctx, ox, yoy, x0 + s, y0 + s / 2 - 0.22, z0, y0 + s / 2 + 0.22, z0 + hh, kurK);
+
+      // kapak: gövdeden taşıyor
+      const kx = x0 - 0.22, ks = s + 0.44, kz = z0 + hh;
+      Iso.box(ctx, ox, yoy, kx, y0 - 0.2, kz, ks, ks, 0.42, Iso.shade(C.seaRed, 0.14));
+      faceY(ctx, ox, yoy, y0 - 0.2 + ks, kx + ks / 2 - 0.22, kz, kx + ks / 2 + 0.22, kz + 0.42, kur);
+      faceX(ctx, ox, yoy, kx + ks, y0 - 0.2 + ks / 2 - 0.22, kz, y0 - 0.2 + ks / 2 + 0.22, kz + 0.42, kurK);
+      // kapağın üstündeki kurdele haçı
+      const kt = kz + 0.42;
+      Iso.tile(ctx, ox, yoy, 2.33, y0 - 0.2, kt, 0.34, ks, kur);
+      Iso.tile(ctx, ox, yoy, kx, 2.33, kt, ks, 0.34, Iso.shade(kur, 0.1));
+
+      /* Fiyonk: dört ilmek ortada birleşince altın bir yumak gibi
+         duruyordu; ilmekleri inceltip aralarına kırmızıyı geri
+         soktum, düğümü de açtım ki ayrışsın. */
+      Iso.box(ctx, ox, yoy, 1.82, 2.36, kt, 0.5, 0.28, 0.2, kur);
+      Iso.box(ctx, ox, yoy, 2.86, 2.36, kt, 0.5, 0.28, 0.2, kur);
+      Iso.box(ctx, ox, yoy, 2.36, 1.82, kt, 0.28, 0.5, 0.2, Iso.shade(kur, -0.14));
+      Iso.box(ctx, ox, yoy, 2.36, 2.86, kt, 0.28, 0.5, 0.2, Iso.shade(kur, -0.14));
+      Iso.box(ctx, ox, yoy, 2.34, 2.34, kt, 0.34, 0.34, 0.3, Iso.shade(kur, 0.34));
 
       // etrafında dolanan kıvılcımlar
-      const c0 = Iso.project(2.5, 2.5, 2.2);
+      const c0 = Iso.project(2.5, 2.5, 2.6);
       for (let i = 0; i < 6; i++) {
         const a = t * 1.3 + i * 1.05;
-        const rx = Math.round(Math.cos(a) * (14 + i));
+        const rx = Math.round(Math.cos(a) * (15 + i));
         const ry = Math.round(Math.sin(a * 1.4) * 6 - i);
         Iso.rect(ctx, ox + c0[0] + rx, yoy + c0[1] + ry, 2, 1, i % 2 ? C.gold : C.pink);
       }
     },
 
-    /* 07 — Çırağan: sarı taş cephe, sahil, koşu yolu */
+    /* 07 — Çırağan: sarı taş cephe, rıhtım, koşu yolu */
     ciragan(ctx, w, h, t) {
-      const ox = w / 2 - 6, oy = 36;
+      const ox = w / 2 - 6, oy = 34;
       water(ctx, ox, oy, 8, 6, t, '#245C77');
-      // rıhtım
       plinth(ctx, ox, oy, 6, 4.2, '#CDBEA0', '#9E8C70', 1.3);
-      // koşu yolu
       Iso.tile(ctx, ox, oy, 0.2, 3.1, 0.03, 5.6, 0.9, '#B08A63');
       Iso.tile(ctx, ox, oy, 0.2, 3.52, 0.05, 5.6, 0.08, '#E6D7B6');
-      // saray cephesi
+
       Iso.box(ctx, ox, oy, 0.3, 0.3, 0, 5.2, 2.2, 2.6, C.gold, { top: Iso.shade(C.gold, 0.26) });
-      // sütunlar ve pencereler
       for (let i = 0; i < 7; i++) {
         const x = 0.55 + i * 0.72;
         faceY(ctx, ox, oy, 2.5, x, 0.55, x + 0.34, 1.75, '#7E5F2C');
         Iso.box(ctx, ox, oy, x + 0.36, 2.4, 0, 0.16, 0.16, 2.1, Iso.shade(C.gold, 0.3));
       }
-      // saçak
       Iso.box(ctx, ox, oy, 0.15, 0.15, 2.6, 5.5, 2.5, 0.32, '#EFD79A');
 
-      lamp(ctx, ox, oy, 0.35, 3.85, false);
-      lamp(ctx, ox, oy, 5.5, 3.15, false);
+      lamp(ctx, ox, oy, 0.3, 3.9, false);
+      lamp(ctx, ox, oy, 5.6, 3.1, false);
 
-      const a = Iso.project(1.0, 3.4, 0), b = Iso.project(4.0, 3.35, 0);
-      Sprites.draw(ctx, Sprites.FOK,   ox + a[0] - 4, oy + a[1] - 10 + bob(t),      { scale: 1 });
-      Sprites.draw(ctx, Sprites.RAKUN, ox + b[0] - 4, oy + b[1] - 13 + bob(t, 1.1), { scale: 1 });
+      figure(ctx, Sprites.FOK,   ox, oy, 0.9, 3.6, 0, bob(t));
+      figure(ctx, Sprites.RAKUN, ox, oy, 4.2, 3.2, 0, bob(t, 1.1));
       gulls(ctx, w, t, 2, 2);
     },
 
-    /* 08 — Dönüş: aynı vapur, ışıkları yanmış, ay çıkmış */
+    /* 08 — Dönüş: aynı vapur, ışıkları yanmış, su altın */
     donus(ctx, w, h, t) {
       const ox = w / 2 - 6, oy = 36;
       water(ctx, ox, oy, 8, 6, t, '#16354A');
-      const sway = Math.round(Math.sin(t * 0.8) * 1.2);
-      const oyy = oy + sway;
+      const oyy = oy + Math.round(Math.sin(t * 0.8) * 1.2);
 
       Iso.box(ctx, ox, oyy, 0.8, 1.4, 0, 5.4, 2.6, 1.1, '#1D2830');
       Iso.box(ctx, ox, oyy, 0.8, 1.4, 1.1, 5.4, 2.6, 0.9, '#C9C1B2');
       Iso.tile(ctx, ox, oyy, 0.8, 1.4, 2.0, 5.4, 2.6, '#7E6647');
-      Iso.box(ctx, ox, oyy, 1.5, 1.75, 2.0, 3.6, 1.9, 1.2, '#C9C1B2');
-      Iso.tile(ctx, ox, oyy, 1.5, 1.75, 3.2, 3.6, 1.9, '#B3A78F');
+      Iso.box(ctx, ox, oyy, 1.5, 1.6, 2.0, 3.6, 1.7, 1.2, '#C9C1B2');
+      Iso.tile(ctx, ox, oyy, 1.5, 1.6, 3.2, 3.6, 1.7, '#B3A78F');
       for (let i = 0; i < 5; i++) {
         const on = (i + Math.floor(t * 0.7)) % 4 !== 0;
-        faceY(ctx, ox, oyy, 3.65, 1.75 + i * 0.66, 2.35, 2.15 + i * 0.66, 2.9, on ? C.gold : '#2D4E5F');
+        faceY(ctx, ox, oyy, 3.3, 1.75 + i * 0.66, 2.35, 2.15 + i * 0.66, 2.9, on ? C.gold : '#2D4E5F');
       }
-      Iso.box(ctx, ox, oyy, 2.9, 2.35, 3.2, 0.72, 0.72, 1.5, Iso.shade(C.seaRed, -0.18));
-      Iso.box(ctx, ox, oyy, 2.86, 2.31, 4.5, 0.8, 0.8, 0.3, '#191E22');
+      Iso.box(ctx, ox, oyy, 2.9, 2.2, 3.2, 0.72, 0.72, 1.5, Iso.shade(C.seaRed, -0.18));
+      Iso.box(ctx, ox, oyy, 2.86, 2.16, 4.5, 0.8, 0.8, 0.3, '#191E22');
 
-      // suya vuran ışık
       for (let i = 0; i < 5; i++) {
         const p = Iso.project(2.4 + i * 0.5, 4.6 + (i % 2) * 0.5, 0);
         Iso.rect(ctx, ox + p[0], oy + p[1], 3 + (i % 2), 1, 'rgba(223,174,62,0.42)');
       }
 
-      const a = Iso.project(1.9, 3.75, 2.0), b = Iso.project(3.1, 3.8, 2.0);
-      Sprites.draw(ctx, Sprites.FOK,   ox + a[0] - 5, oyy + a[1] - 10 + bob(t),      { scale: 1 });
-      Sprites.draw(ctx, Sprites.RAKUN, ox + b[0] - 5, oyy + b[1] - 13 + bob(t, 0.7), { scale: 1 });
+      figure(ctx, Sprites.FOK,   ox, oyy, 1.0, 3.9, 2.0, bob(t));
+      figure(ctx, Sprites.RAKUN, ox, oyy, 4.0, 3.4, 2.0, bob(t, 0.7));
     },
   };
 

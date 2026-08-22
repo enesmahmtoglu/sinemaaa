@@ -466,17 +466,6 @@ body {
   background: var(--land-gold);
   width: 9px; height: 9px;
 }
-/* duraklar arasındaki rota çizgisi */
-.rail__dot + .rail__dot { margin-left: -4px; }
-.rail__dot:not(:last-child)::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 60%;
-  width: 14px;
-  height: 1px;
-  background: rgba(239, 230, 214, .2);
-}
 
 .sound {
   position: fixed;
