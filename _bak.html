@@ -1,0 +1,10 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>bak</title>
+<style>body{background:#1C4A63;margin:0;display:flex;gap:30px;justify-content:center;align-items:center;height:100vh}
+canvas{image-rendering:pixelated;background:#2A6484}</style></head><body>
+<canvas id="a" width="28" height="22" style="width:336px;height:264px"></canvas>
+<canvas id="b" width="28" height="30" style="width:336px;height:360px"></canvas>
+<script src="js/sprites.js"></script>
+<script>
+Sprites.draw(document.getElementById('a').getContext('2d'),Sprites.FOK,0,0);
+Sprites.draw(document.getElementById('b').getContext('2d'),Sprites.RAKUN,0,0);
+</script></body></html>

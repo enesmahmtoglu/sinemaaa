@@ -9,9 +9,9 @@
 
 const Iso = (() => {
 
-  const TW = 12;   // karo genişliği
-  const TH = 6;    // karo yüksekliği (2:1 izometrik)
-  const ZH = 7;    // bir birim yükseklik
+  const TW = 20;   // karo genişliği
+  const TH = 10;    // karo yüksekliği (2:1 izometrik)
+  const ZH = 12;    // bir birim yükseklik
 
   /* --- renk yardımcıları --- */
 

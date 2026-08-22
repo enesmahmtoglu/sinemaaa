@@ -160,7 +160,7 @@ body {
 }
 
 .diorama--intro {
-  width: min(300px, 74vw);
+  width: min(330px, 84vw);
   margin-top: var(--gap-s);
   filter: none;
 }
@@ -202,7 +202,7 @@ body {
 }
 
 .diorama {
-  width: min(320px, 82%);
+  width: min(334px, 88%);
   height: auto;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
@@ -570,12 +570,12 @@ body {
    ama biletin genişliğini artırıp yazıyı biraz büyütelim */
 @media (min-width: 900px) {
   :root { --panel-w: 460px; }
-  .diorama { width: min(340px, 84%); }
+  .diorama { width: min(352px, 86%); }
 }
 
 /* alçak ekran (yatay telefon): diorama küçülsün ki bilet kesilmesin */
 @media (max-height: 620px) {
-  .diorama { width: min(228px, 58%); }
+  .diorama { width: min(250px, 62%); }
   .ticket__body { font-size: 13.5px; }
   .swipe { bottom: 48px; }
 }

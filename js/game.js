@@ -15,7 +15,7 @@ const Game = (() => {
   let cv, ctx, msgEl, distEl, raf = null, running = false;
   let held = false, last = 0;
 
-  const fok = { y: SURF + 6, vy: 0, hit: 0 };
+  const fok = { y: SURF + 2, vy: 0, hit: 0 };
   let dist = 0, speed = 0, engel = [], parts = [], spawnAt = 60, bitti = false, sway = 0;
 
   const COL = {
@@ -26,7 +26,7 @@ const Game = (() => {
   };
 
   function reset() {
-    fok.y = SURF + 8; fok.vy = 0; fok.hit = 0;
+    fok.y = SURF + 2; fok.vy = 0; fok.hit = 0;
     dist = 0; speed = 46; engel = []; parts = []; spawnAt = 70; bitti = false; sway = 0;
     msgEl.textContent = 'basılı tut — fok dalar';
   }
@@ -63,8 +63,8 @@ const Game = (() => {
     fok.vy += (held ? 150 : -118) * dt;
     fok.vy *= 0.90;
     fok.y += fok.vy * dt;
-    if (fok.y < SURF - 7) { fok.y = SURF - 7; fok.vy = 0; }
-    if (fok.y > H - 15)   { fok.y = H - 15;   fok.vy = 0; }
+    if (fok.y < SURF - 13) { fok.y = SURF - 13; fok.vy = 0; }
+    if (fok.y > H - 24)   { fok.y = H - 24;   fok.vy = 0; }
 
     // engeller
     spawnAt -= speed * dt;
@@ -75,11 +75,11 @@ const Game = (() => {
     for (const e of engel) {
       e.x -= speed * dt;
       if (fok.hit <= 0 &&
-          e.x < 59 && e.x + e.w > 46 &&
-          fok.y + 11 > e.y && fok.y + 2 < e.y + e.h) {
+          e.x < 66 && e.x + e.w > 44 &&
+          fok.y + 19 > e.y && fok.y + 4 < e.y + e.h) {
         fok.hit = 0.9;
         speed = Math.max(34, speed * 0.55);
-        patlat(52, fok.y + 6, e.tip === 'vapur' ? COL.beyaz : COL.pembe, 8);
+        patlat(55, fok.y + 11, e.tip === 'vapur' ? COL.beyaz : COL.pembe, 8);
         msgEl.textContent = e.tip === 'vapur' ? 'eh, vapurla da gideriz' : 'denizanası, aman';
       }
     }
@@ -167,13 +167,13 @@ const Game = (() => {
     if (fok.hit > 0 && Math.floor(fok.hit * 14) % 2 === 0) {
       // çarpınca bir kare atla: yanıp söner
     } else {
-      Sprites.draw(ctx, Sprites.FOK, 44, fy, { scale: 1 });
+      Sprites.draw(ctx, Sprites.FOK, 41, fy, { scale: 1 });
     }
     // arkasında kabarcık izi
     ctx.fillStyle = 'rgba(255,255,255,0.4)';
     for (let i = 0; i < 4; i++) {
-      const bx = 42 - i * 7 - ((t * 40) % 7);
-      ctx.fillRect(Math.round(bx), fy + 7 + (i % 2), 2, 1);
+      const bx = 39 - i * 8 - ((t * 40) % 8);
+      ctx.fillRect(Math.round(bx), fy + 12 + (i % 2), 2, 1);
     }
 
     for (const p of parts) { ctx.fillStyle = p.c; ctx.fillRect(Math.round(p.x), Math.round(p.y), 2, 2); }
