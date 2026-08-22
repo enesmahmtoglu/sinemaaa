@@ -102,9 +102,9 @@ const Scenes = (() => {
       const dalga = Math.round(Math.sin(t * 1.1) * 1.2);
 
       const b = Iso.project(4.6, 1.4, 0);
-      Iso.box(ctx, ox, oy + dalga, 4.6, 1.4, 0, 0.55, 0.55, 1.5, C.seaRed);
-      Iso.box(ctx, ox, oy + dalga, 4.52, 1.32, 1.5, 0.72, 0.72, 0.25, '#2E3840');
-      Iso.rect(ctx, ox + b[0] + 1, oy + dalga + b[1] + 3, 8, 1, 'rgba(191,224,230,0.5)');
+      Iso.box(ctx, ox, oy + dalga, 4.6, 1.4, 0, 0.85, 0.85, 2.0, C.seaRed);
+      Iso.box(ctx, ox, oy + dalga, 4.5, 1.3, 2.0, 1.05, 1.05, 0.3, '#2E3840');
+      Iso.rect(ctx, ox + b[0] - 4, oy + dalga + b[1] + 5, 20, 1, 'rgba(191,224,230,0.5)');
 
       // fok: sadece sırtı ve kafası suyun üstünde
       const p = Iso.project(2.0, 2.8, 0);
@@ -117,7 +117,7 @@ const Scenes = (() => {
       ctx.clip();
       Sprites.draw(ctx, Sprites.FOK, fx, fy, { scale: 1 });
       ctx.restore();
-      Iso.rect(ctx, fx - 3, fy + fh - 5, 34, 1, 'rgba(191,224,230,0.45)');
+      Iso.rect(ctx, fx - 1, fy + fh - 5, 30, 1, 'rgba(191,224,230,0.45)');
 
       gulls(ctx, w, t, 2, 2);
     },
