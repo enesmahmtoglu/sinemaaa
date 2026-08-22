@@ -59,10 +59,17 @@ const PALET = {
     return b;
   });
 
+  /* scroll-snap ile programlı kaydırma çakışıyor: tarayıcı yumuşak
+     kaydırmayı ilk durakta kesip bırakıyordu. Kaydırma boyunca snap'i
+     kapatıp bitince geri açmak tek güvenilir çözüm. */
+  let snapTimer = null;
   function goto(i) {
     const p = panels[i];
     const x = p.offsetLeft - (track.clientWidth - p.clientWidth) / 2;
+    track.style.scrollSnapType = 'none';
     track.scrollTo({ left: x, behavior: azHareket ? 'auto' : 'smooth' });
+    clearTimeout(snapTimer);
+    snapTimer = setTimeout(() => { track.style.scrollSnapType = ''; }, 700);
   }
 
   /* ---------------- kaydırma ---------------- */

@@ -233,22 +233,38 @@ const Scenes = (() => {
       Sprites.draw(ctx, Sprites.FOK, ox + q[0] - 2, oy + q[1] - 10 + bob(t, 2.2), { scale: 1 });
     },
 
-    /* 06 — Sürpriz: kaideye konmuş kapalı kutu */
+    /* 06 — Sürpriz: kaidenin üstünde duran kapalı kutu.
+       Önce piksel bir çıkartma olarak çizmiştim, sahnenin geri kalanının
+       yanında oyuncak gibi kalıyordu; izometrik kutuya çevirdim. */
     surpriz(ctx, w, h, t) {
       const ox = w / 2, oy = 38;
       plinth(ctx, ox, oy, 5, 5, Iso.shade(C.seaBlue, 0.16), Iso.shade(C.seaBlue, -0.28), 1.4);
-      // kaide
-      Iso.box(ctx, ox, oy, 1.6, 1.6, 0, 1.8, 1.8, 1.0, Iso.shade(C.seaBlue, 0.05));
-      // havada duran kutu
-      const lift = Math.round(Math.sin(t * 1.4) * 1.5);
-      const p = Iso.project(2.5, 2.5, 1.0);
-      Sprites.shadow(ctx, ox + p[0], oy + p[1] + 2, 9 - Math.abs(lift), 2, 'rgba(10,30,45,0.28)');
-      Sprites.draw(ctx, Sprites.KUTU, ox + p[0] - 4, oy + p[1] - 16 + lift, { scale: 1 });
-      // kıvılcımlar
-      for (let i = 0; i < 4; i++) {
-        const a = t * 1.1 + i * 1.57;
-        const rx = Math.round(Math.cos(a) * 15), ry = Math.round(Math.sin(a * 1.3) * 7);
-        Iso.rect(ctx, ox + p[0] - 1 + rx, oy + p[1] - 14 + ry, 1, 1, i % 2 ? C.gold : C.pink);
+      Iso.box(ctx, ox, oy, 1.5, 1.5, 0, 2.0, 2.0, 0.9, Iso.shade(C.seaBlue, 0.04));
+
+      const lift = Math.round(Math.sin(t * 1.4) * 2);
+      const yoy = oy - 4 + lift;                 // kutu havada duruyor
+      const g = Iso.project(2.5, 2.5, 0.9);
+      Sprites.shadow(ctx, ox + g[0], oy + g[1] - 1, 11 - Math.abs(lift), 3, 'rgba(8,26,40,0.30)');
+
+      // kutu gövdesi
+      Iso.box(ctx, ox, yoy, 1.75, 1.75, 0.9, 1.5, 1.5, 1.15, C.seaRed);
+      // kurdele: iki yönde şerit
+      Iso.box(ctx, ox, yoy, 2.35, 1.75, 0.9, 0.3, 1.5, 1.17, C.gold);
+      Iso.box(ctx, ox, yoy, 1.75, 2.35, 0.9, 1.5, 0.3, 1.17, C.gold);
+      // kapak
+      Iso.box(ctx, ox, yoy, 1.6, 1.6, 2.05, 1.8, 1.8, 0.3, Iso.shade(C.seaRed, 0.12));
+      // fiyonk
+      Iso.box(ctx, ox, yoy, 2.25, 2.25, 2.35, 0.5, 0.5, 0.32, C.gold);
+      Iso.box(ctx, ox, yoy, 2.05, 2.42, 2.42, 0.4, 0.24, 0.18, Iso.shade(C.gold, 0.2));
+      Iso.box(ctx, ox, yoy, 2.42, 2.05, 2.42, 0.24, 0.4, 0.18, Iso.shade(C.gold, 0.2));
+
+      // etrafında dolanan kıvılcımlar
+      const c0 = Iso.project(2.5, 2.5, 2.2);
+      for (let i = 0; i < 6; i++) {
+        const a = t * 1.3 + i * 1.05;
+        const rx = Math.round(Math.cos(a) * (14 + i));
+        const ry = Math.round(Math.sin(a * 1.4) * 6 - i);
+        Iso.rect(ctx, ox + c0[0] + rx, yoy + c0[1] + ry, 2, 1, i % 2 ? C.gold : C.pink);
       }
     },
 
