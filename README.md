@@ -39,6 +39,7 @@ js/scenes.js      sekiz izometrik diorama
 js/sky.js         sabit Boğaz manzarası, saate göre değişen ışık
 js/game.js        vapur geçişi mini oyunu
 js/main.js        ayarlar, kaydırma, ses, fotoğraf
+tools/figur.py    fok, rakun ve metro levhasını üreten betik
 ```
 
 ## Notlar
@@ -47,6 +48,9 @@ js/main.js        ayarlar, kaydırma, ses, fotoğraf
   ya da ok tuşlarıyla.
 - Gökyüzü sayfa boyunca öğleden akşama döner; son durakta ufuk, vapur
   bacasının kırmızısına iner.
-- Piksel figürler hazır görsel değil, `js/sprites.js` içinde harf harf
-  yazılmış. Renk değiştirmek istersen oradaki `PAL` tablosuna bak.
+- Piksel figürler hazır görsel değil. Fok, rakun ve metro levhası
+  `tools/figur.py` ile üretiliyor: gövde elips olarak taranıp ışığa göre
+  tonlanıyor, gözler ve burun üstüne elle basılıyor. Çıktı `js/sprites.js`
+  içine harf harf yazılıyor. Şekli değiştirmek için `tools/figur.py`,
+  sadece rengi değiştirmek için `js/sprites.js` içindeki `PAL` tablosu.
 - `noindex` etiketi var: arama motorlarına düşmez, linki bilen açar.
