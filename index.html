@@ -170,9 +170,17 @@
 
 <div class="game" id="game" hidden>
   <div class="game__box">
-    <canvas id="gameCanvas" width="240" height="132"></canvas>
-    <p class="game__hud"><span id="gameMsg">dokun ya da boşluk &mdash; fok dalar</span><span id="gameDist">0 m</span></p>
-    <button class="game__close" id="gameClose" type="button">Kapat</button>
+    <div class="game__screen">
+      <canvas id="gameCanvas" width="320" height="200"></canvas>
+    </div>
+    <p class="game__hud">
+      <span id="gameMsg">basılı tut &mdash; fok dalar</span>
+      <span class="game__stats"><b id="gameSimit">0</b> simit &middot; <b id="gameDist">0 m</b></span>
+    </p>
+    <div class="game__btns">
+      <button class="game__again" id="gameAgain" type="button" hidden>Tekrar</button>
+      <button class="game__close" id="gameClose" type="button">Kapat</button>
+    </div>
   </div>
 </div>
 

@@ -505,54 +505,95 @@ body {
   z-index: 6;
   display: grid;
   place-items: center;
-  background: rgba(9, 25, 37, .78);
+  background: rgba(9, 25, 37, .82);
   backdrop-filter: blur(4px);
-  padding: 16px;
+  padding: 14px;
 }
 .game[hidden] { display: none; }
+
 .game__box {
   background: var(--paper);
   padding: 12px;
   border-radius: 3px;
-  width: min(440px, 100%);
+  width: min(560px, 100%);
   box-shadow: 0 20px 50px -16px rgba(0, 0, 0, .7);
+}
+
+/* Tuval kendi çerçevesinde dursun: kenarında ince bir mürekkep hattı
+   olunca oyun ekranı bir aygıt gibi okunuyor. */
+.game__screen {
+  position: relative;
+  border: 2px solid var(--ink);
+  border-radius: 2px;
+  overflow: hidden;
+  line-height: 0;
 }
 #gameCanvas {
   width: 100%;
   height: auto;
   display: block;
   image-rendering: pixelated;
-  border-radius: 2px;
-  touch-action: manipulation;
+  image-rendering: crisp-edges;
+  touch-action: none;
   cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
+
 .game__hud {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  align-items: center;
-  margin: 10px 2px 0;
+  align-items: baseline;
+  min-height: 17px;          /* satır sayısı değişince düğmeler zıplamasın */
+  gap: 4px 12px;
+  margin: 11px 2px 0;
   font-family: "IBM Plex Mono", monospace;
-  font-size: 10.5px;
-  letter-spacing: .08em;
+  font-size: 11px;
+  letter-spacing: .06em;
   text-transform: uppercase;
   color: var(--ink-soft);
 }
-#gameDist { color: var(--sea-red); font-weight: 600; }
+.game__hud #gameMsg { text-transform: none; letter-spacing: .01em; font-size: 12px; }
+.game__stats { white-space: nowrap; }
+.game__stats b { color: var(--sea-red); font-weight: 600; }
+
+.game__btns { display: flex; gap: 8px; margin-top: 11px; }
+.game__again,
 .game__close {
-  margin-top: 10px;
-  width: 100%;
+  flex: 1;
   font-family: "IBM Plex Mono", monospace;
-  font-size: 11px;
+  font-size: 11.5px;
   letter-spacing: .1em;
   text-transform: uppercase;
-  padding: 9px;
+  padding: 12px 10px;
+  border-radius: 2px;
+  cursor: pointer;
   border: 1px solid rgba(23, 37, 46, .25);
   background: transparent;
   color: var(--ink);
-  border-radius: 2px;
-  cursor: pointer;
 }
+.game__again {
+  border-color: transparent;
+  background: var(--sea-blue);
+  color: var(--paper);
+  flex: 1.4;
+}
+.game__again[hidden] { display: none; }
 .game__close:hover { background: rgba(23, 37, 46, .07); }
+.game__again:hover  { background: #245F7E; }
+
+/* Telefonda oyun neredeyse tam ekran olsun: dar ekranda kenar boşluğu
+   oynanacak alanı yiyordu. */
+@media (max-width: 560px) {
+  .game { padding: 8px; }
+  .game__box { padding: 8px; }
+  .game__hud { font-size: 10px; margin-top: 9px; }
+  .game__hud #gameMsg { font-size: 11px; }
+  .game__btns { margin-top: 9px; }
+  .game__again, .game__close { padding: 13px 8px; }
+}
 
 /* ============================ erişilebilirlik ==================== */
 
