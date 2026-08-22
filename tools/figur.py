@@ -37,6 +37,26 @@ def leke(g, cx, cy, rx, ry, ch, kesme=1.0):
             if dx * dx + dy * dy <= kesme:
                 g[y][x] = ch
 
+def cokgen(g, noktalar, ch):
+    """Tarama satırıyla çokgen doldurur. M ve ok gibi köşeli şekiller
+    elipsle çizilemiyor, logoyu gerçek geometrisiyle kurmak için bu lazım."""
+    h, w = len(g), len(g[0])
+    ys = [p[1] for p in noktalar]
+    for y in range(max(0, int(min(ys))), min(h, int(max(ys)) + 2)):
+        yc = y + 0.5
+        kesim = []
+        n = len(noktalar)
+        for i in range(n):
+            ax, ay = noktalar[i]
+            bx, by = noktalar[(i + 1) % n]
+            if (ay <= yc < by) or (by <= yc < ay):
+                kesim.append(ax + (yc - ay) / (by - ay) * (bx - ax))
+        kesim.sort()
+        for i in range(0, len(kesim) - 1, 2):
+            for x in range(max(0, int(round(kesim[i]))), min(w, int(round(kesim[i + 1])))):
+                g[y][x] = ch
+
+
 def nokta(g, x, y, ch):
     if 0 <= y < len(g) and 0 <= x < len(g[0]):
         g[y][x] = ch
@@ -110,35 +130,30 @@ for x in (12, 13, 14, 15):
 nokta(rak, 13, 16, 'n'); nokta(rak, 14, 16, 'n')
 
 # ---------------------------------------------------------------- METRO
-# İstanbul metro logosu: lacivert daire, beyaz M, M'nin içinden geçip
-# aşağı sivrilen kırmızı ok.
-MW, MH = 21, 27
+# İstanbul metro logosu. Üç parça: lacivert daire, beyaz M ve M'nin
+# üstüne binen kırmızı ok. Kırmızı ok da aslında bir M: tepesi ortada
+# V yapıp aşağı iniyor, altta oklara açılıp sivriliyor. İlk denemede
+# bunu döngülerle çizmeye çalışınca M'nin ortası dağıldı.
+MW, MH = 23, 29
 met = bos(MW, MH)
-leke(met, 10.5, 10.0, 10.4, 10.0, 'v')
-# M'nin dikey kolları
-for y in range(4, 18):
-    for x in (3, 4, 5, 15, 16, 17):
-        nokta(met, x, y, 'B')
-# M'nin ortadaki V'si
-for i in range(10):
-    y = 4 + i
-    t = i / 9.0
-    xl = 5 + t * 5.0
-    xr = 15 - t * 5.0
-    for d in (-1, 0, 1):
-        nokta(met, int(round(xl)) + d, y, 'B')
-        nokta(met, int(round(xr)) + d, y, 'B')
-# kırmızı okun gövdesi
-for y in range(9, 18):
-    for x in range(8, 13):
-        nokta(met, x, y, 'K')
-# ok başı
-for i, y in enumerate(range(18, MH)):
-    yari = 10.5 - i * 1.2
-    if yari < 0:
-        break
-    for x in range(int(round(10.5 - yari)), int(round(10.5 + yari)) + 1):
-        nokta(met, x, y, 'K')
+
+# Oranlar doğrudan logodan ölçüldü: daire yüksekliğin %78'i, M'nin
+# tepesi %10'u, beyaz V'nin ucu ile kırmızı V'nin çukuru aynı yerde
+# (%47), okun kanatları %74'te, ucu en altta.
+leke(met, 11.5, 11.3, 11.5, 11.3, 'v')
+
+BEYAZ_M = [
+    (3.0, 2.9), (6.9, 2.9), (11.5, 14.3), (16.1, 2.9), (20.0, 2.9),
+    (20.0, 21.7), (16.1, 21.7), (16.1, 9.0), (11.5, 17.4), (6.9, 9.0),
+    (6.9, 21.7), (3.0, 21.7),
+]
+cokgen(met, BEYAZ_M, 'B')
+
+KIRMIZI_OK = [
+    (6.4, 9.3), (11.5, 13.6), (16.6, 9.3), (16.6, 21.5),
+    (22.5, 21.5), (11.5, 28.9), (0.5, 21.5), (6.4, 21.5),
+]
+cokgen(met, KIRMIZI_OK, 'K')
 
 if __name__ == '__main__':
     import json, sys
