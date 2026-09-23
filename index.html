@@ -1,211 +1,271 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="robots" content="noindex, nofollow, noarchive">
-<meta name="theme-color" content="#1C4A63">
-<title>27 Ağustos</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%231C4A63%22%2F%3E%3Crect%20x%3D%225%22%20y%3D%223%22%20width%3D%226%22%20height%3D%2210%22%20fill%3D%22%23B4382C%22%2F%3E%3Crect%20x%3D%225%22%20y%3D%223%22%20width%3D%226%22%20height%3D%222%22%20fill%3D%22%2317252E%22%2F%3E%3Crect%20x%3D%223%22%20y%3D%2213%22%20width%3D%2210%22%20height%3D%221%22%20fill%3D%22%23EFE6D6%22%2F%3E%3C%2Fsvg%3E">
-<meta property="og:title" content="27 Ağustos">
-<meta property="og:description" content="Perşembe için bir planım var.">
-<meta property="og:type" content="website">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=7">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="theme-color" content="#0C1015">
+  <title>Sinema Gecesi Davetiyesi 🍿🎬</title>
+  
+  <!-- Favicon: Retro Sinema Bileti & Projektör -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Crect%20width%3D%2216%22%20height%3D%2216%22%20rx%3D%223%22%20fill%3D%22%238B1E26%22%2F%3E%3Ccircle%20cx%3D%220%22%20cy%3D%228%22%20r%3D%222.5%22%20fill%3D%22%230C1015%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%228%22%20r%3D%222.5%22%20fill%3D%22%230C1015%22%2F%3E%3Ctext%20x%3D%225%22%20y%3D%2211%22%20fill%3D%22%23D4AF37%22%20font-size%3D%227%22%20font-weight%3D%22bold%22%20font-family%3D%22monospace%22%3E%E2%98%85%3C%2Ftext%3E%3C%2Fsvg%3E">
+
+  <!-- Tipografi: Newsreader (Nostaljik Serif), IBM Plex Mono (Bilet/Baskı), Archivo (Modern Arayüz), Caveat (El Yazısı) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Caveat:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<canvas id="sky" aria-hidden="true"></canvas>
+  <!-- Atmosferik Projektör Işığı ve Toz Parçacıkları (Canvas) -->
+  <canvas id="projector-canvas" aria-hidden="true"></canvas>
+  <div class="theater-light-cone" aria-hidden="true"></div>
 
-<noscript>
-  <div class="noscript">
-    <p><strong>27 Ağustos, Perşembe &middot; 12:00</strong></p>
-    <p>Kadıköy M4 turnikeler, 3&ndash;4. çıkış. Sayfanın geri kalanı için JavaScript gerekiyor.</p>
-  </div>
-</noscript>
+  <!-- Üst Bar: Müzik Butonu -->
+  <header class="cinema-header">
+    <div class="cinema-header__spacer"></div>
 
-<main id="track" class="track" tabindex="0" aria-label="Buluşma planı, soldan sağa ilerler">
+    <button class="audio-toggle" id="audioToggle" type="button" aria-label="Arka plan müziğini aç/kapat">
+      <svg class="audio-toggle__icon" viewBox="0 0 24 24">
+        <!-- Film Makarası İkonu -->
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+        <circle cx="12" cy="12" r="3" fill="currentColor"/>
+        <circle cx="12" cy="6" r="1.5" fill="currentColor"/>
+        <circle cx="12" cy="18" r="1.5" fill="currentColor"/>
+        <circle cx="6" cy="12" r="1.5" fill="currentColor"/>
+        <circle cx="18" cy="12" r="1.5" fill="currentColor"/>
+      </svg>
+      <span class="audio-toggle__text">Müzik</span>
+    </button>
+  </header>
 
-  <!-- 0 — açılış -->
-  <section class="panel panel--intro" id="s0" aria-labelledby="introTitle">
-    <div class="intro">
-      <p class="intro__line">Perşembe için bir planım var.</p>
-      <h1 class="intro__date" id="introTitle"><span>27</span><span>Ağustos</span></h1>
-      <p class="intro__meta">12:00 &middot; Kadıköy M4 turnikeler &middot; 3–4. çıkış</p>
-      <canvas class="diorama diorama--intro" data-scene="intro" width="208" height="100" aria-hidden="true"></canvas>
-    </div>
-    <p class="swipe"><span class="swipe__word">sağa kaydır</span><span class="swipe__arrow">→</span></p>
-  </section>
+  <!-- Ana Sahne (Ekranlar) -->
+  <main class="cinema-stage">
 
-  <!-- 1 — Kadıköy -->
-  <section class="panel" id="s1" aria-labelledby="t1">
-    <div class="stop">
-      <canvas class="diorama" data-scene="kadikoy" width="208" height="140" aria-hidden="true"></canvas>
-      <article class="ticket">
-        <header class="ticket__head"><span>Durak 01</span><span>12:00</span></header>
-        <h2 class="ticket__title" id="t1">Kadıköy</h2>
-        <p class="ticket__body">Turnikelerde bekliyor olacağım. 3–4. çıkış, tam saat on ikide.</p>
-      </article>
-    </div>
-  </section>
-
-  <!-- 2 — Vapur + oyun -->
-  <section class="panel" id="s2" aria-labelledby="t2">
-    <div class="stop">
-      <canvas class="diorama" data-scene="vapur" width="208" height="140" aria-hidden="true"></canvas>
-      <article class="ticket">
-        <header class="ticket__head"><span>Durak 02</span><span>12:20</span></header>
-        <h2 class="ticket__title" id="t2">Vapur</h2>
-        <p class="ticket__body">Karşıya vapurla geçicez. Yirmi dakika fln sürer. AŞŞIRI GÜZEL OLACAK</p>
-        <button class="play" id="playBtn" type="button">
-          <span class="play__madalyon" aria-hidden="true">
-            <canvas class="play__fok" width="28" height="22"></canvas>
-          </span>
-          <span class="play__yazi">
-            <span class="play__baslik">Hadi Oynayalım</span>
-            <span class="play__alt">Boğaz'ı foka yüzdür</span>
-          </span>
-          <span class="play__ok" aria-hidden="true">
-            <svg viewBox="0 0 18 12" focusable="false"><path d="M11.4.6 17 6l-5.6 5.4-1.3-1.4 3.1-3H1V5.1h12.2l-3.1-3z"/></svg>
-          </span>
-        </button>
-      </article>
-    </div>
-  </section>
-
-  <!-- 3 — Beşiktaş -->
-  <section class="panel" id="s3" aria-labelledby="t3">
-    <div class="stop">
-      <canvas class="diorama" data-scene="besiktas" width="208" height="140" aria-hidden="true"></canvas>
-      <article class="ticket">
-        <header class="ticket__head"><span>Durak 03</span><span>12:45</span></header>
-        <h2 class="ticket__title" id="t3">Beşiktaş</h2>
-        <p class="ticket__body">İskeleden çıkınca iett ile 5 dakikaya çırağandayız :&gt;</p>
-      </article>
-    </div>
-  </section>
-
-  <!-- 4 — Palet -->
-  <section class="panel panel--wide" id="s4" aria-labelledby="t4">
-    <div class="stop">
-      <article class="ticket ticket--palette">
-        <header class="ticket__head"><span>Durak 04</span><span>görev</span></header>
-        <h2 class="ticket__title" id="t4">Altı renk</h2>
-        <p class="ticket__body">Buradan itibaren küçük bir rekabet var he. Altı renk seçtim üçü bende diğer üçü sende. Gün boyunca kendi renklerini bulup fotoğrafını çekeceksin veee dijital kamera sende olacak (itiraz yokkk)</p>
-        <div class="palette">
-          <div class="palette__col">
-            <p class="palette__who">Enes</p>
-            <ul class="swatches" id="swEnes"></ul>
+    <!-- ==================== EKRAN 1: VİNTAGE SİNEMA BİLETİ ==================== -->
+    <section class="screen-panel active" id="screen-1" aria-label="Giriş Davetiyesi">
+      <article class="ticket-stub">
+        
+        <header class="ticket-header">
+          <div class="ticket-marquee">
+            <span class="ticket-subtitle">Özel Sinema Davetiyesi</span>
+            <h1 class="ticket-main-title">Film Kulübü</h1>
           </div>
-          <div class="palette__col">
-            <p class="palette__who">İpek</p>
-            <ul class="swatches" id="swIpek"></ul>
+          <div class="ticket-number">NO. 0827</div>
+        </header>
+
+        <div class="ticket-body">
+          <p class="ticket-quote">"Seninle harika bir sinema gecesi yapalım diyorum... Hazırsan her şey hazır!"</p>
+          <p class="ticket-desc">Bu bilet sana özel hazırlandı. Birlikte hangi gün ve hangi sürpriz filmi izleyeceğimizi belirlemek için bileti yırtarak başla.</p>
+
+          <div class="ticket-info-grid">
+            <div class="ticket-info-item">
+              <label>Mekan</label>
+              <span>Ev</span>
+            </div>
+            <div class="ticket-info-item">
+              <label>Koltuk</label>
+              <span>Çift Kişilik VIP</span>
+            </div>
+            <div class="ticket-info-item">
+              <label>Giriş</label>
+              <span>Tek Kişilik Davetiye</span>
+            </div>
+          </div>
+
+          <div class="ticket-divider"></div>
+        </div>
+
+        <footer class="ticket-footer">
+          <button class="btn-cinema" id="btnStartInvite" type="button">
+            <span>Bileti Aç & Keşfet</span>
+            <span aria-hidden="true">&rarr;</span>
+          </button>
+
+          <div class="ticket-barcode">
+            <div class="barcode-lines"></div>
+            <div class="barcode-digits">★ 27 08 2026 ADMIT ONE ★</div>
+          </div>
+        </footer>
+
+      </article>
+    </section>
+
+
+    <!-- ==================== EKRAN 2: GÜN SEÇİMİ ==================== -->
+    <section class="screen-panel" id="screen-2" aria-label="Gün Seçimi">
+      <div class="day-card">
+        <h2 class="screen-title">Hangi Gün Müsaitsin?</h2>
+        <p class="screen-desc">Sinema gecemiz için sana en uygun günü seç, biletimize mührünü basalım.</p>
+
+        <div class="day-options">
+          <button class="btn-day-stamp" id="btnDayToday" type="button">
+            <span class="day-name">Bugün</span>
+            <span class="day-sub">Akşam Seansı</span>
+            <div class="stamp-seal">ONAYLANDI</div>
+          </button>
+
+          <button class="btn-day-stamp" id="btnDayTomorrow" type="button">
+            <span class="day-name">Yarın</span>
+            <span class="day-sub">Akşam Seansı</span>
+            <div class="stamp-seal">ONAYLANDI</div>
+          </button>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ==================== EKRAN 3: 3 GİZEMLİ FİLM SEÇİMİ ==================== -->
+    <section class="screen-panel" id="screen-3" aria-label="Sürpriz Film Seçimi">
+      <div class="movies-card">
+        <h2 class="screen-title">3 Gizemli Film Kutusu</h2>
+        <p class="screen-desc">Seçimini yapmadan önce filmler gizli! Kutulardan birine dokun ve bu gece ne izleyeceğimizi keşfet.</p>
+
+        <div class="mystery-cards-grid">
+          
+          <!-- 1. Kutu: Köfte Yağmuru -->
+          <div class="mystery-box" data-film-id="1">
+            <div class="mystery-icon-frame">
+              <span class="mystery-icon">🎬</span>
+            </div>
+            <div class="mystery-info">
+              <span class="mystery-badge">Sürpriz Seçenek 01</span>
+              <h3 class="mystery-title">Gizemli Film #1</h3>
+              <p class="mystery-desc">Açmak için dokun...</p>
+              <span class="mystery-secret-tape">Mühürlü Kutu 🔒</span>
+            </div>
+          </div>
+
+          <!-- 2. Kutu: Wall-E -->
+          <div class="mystery-box" data-film-id="2">
+            <div class="mystery-icon-frame">
+              <span class="mystery-icon">🎬</span>
+            </div>
+            <div class="mystery-info">
+              <span class="mystery-badge">Sürpriz Seçenek 02</span>
+              <h3 class="mystery-title">Gizemli Film #2</h3>
+              <p class="mystery-desc">Açmak için dokun...</p>
+              <span class="mystery-secret-tape">Mühürlü Kutu 🔒</span>
+            </div>
+          </div>
+
+          <!-- 3. Kutu: Kung Fu Panda 1 -->
+          <div class="mystery-box" data-film-id="3">
+            <div class="mystery-icon-frame">
+              <span class="mystery-icon">🎬</span>
+            </div>
+            <div class="mystery-info">
+              <span class="mystery-badge">Sürpriz Seçenek 03</span>
+              <h3 class="mystery-title">Gizemli Film #3</h3>
+              <p class="mystery-desc">Açmak için dokun...</p>
+              <span class="mystery-secret-tape">Mühürlü Kutu 🔒</span>
+            </div>
+          </div>
+
+        </div>
+
+        <button class="btn-cinema" id="btnProceedGame" type="button">
+          <span>Filmi Onayla & Mini Oyuna Başla</span>
+          <span aria-hidden="true">&rarr;</span>
+        </button>
+      </div>
+    </section>
+
+
+    <!-- ==================== EKRAN 4: PİKSEL MİNİ OYUN ==================== -->
+    <section class="screen-panel" id="screen-4" aria-label="Piksel Mini Oyun">
+      <div class="game-cabinet">
+        <header class="cabinet-marquee">
+          <div class="cabinet-title-wrap">
+            <span class="cabinet-sub">ÖZEL PİKSEL MİNİ OYUN &middot; <span id="cgHeroName">Karakter</span></span>
+            <span class="cabinet-title" id="cgCabinetTitle">PİXEL ARCADE</span>
+          </div>
+          <div class="cabinet-score-badge">
+            Skor: <strong id="cgScoreVal">0</strong> / 10
+          </div>
+        </header>
+
+        <div class="game-viewport">
+          <canvas id="cinemaGameCanvas" width="320" height="240"></canvas>
+        </div>
+
+        <div class="game-progress-bar">
+          <div class="game-progress-fill" id="cgScoreFill"></div>
+        </div>
+
+        <div class="game-controls-bar">
+          <span class="game-hint desktop-hint">&larr; &rarr; Tuşları veya Fare ile hareket ettir</span>
+          <span class="game-hint mobile-hint">Ekranı parmağınla kaydır</span>
+          
+          <div class="mobile-dpad">
+            <button class="btn-dpad" id="cgBtnLeft" type="button">&larr; Sol</button>
+            <button class="btn-dpad" id="cgBtnRight" type="button">Sağ &rarr;</button>
           </div>
         </div>
-      </article>
-    </div>
-  </section>
-
-  <!-- 5 — Yıldız Parkı -->
-  <section class="panel" id="s5" aria-labelledby="t5">
-    <div class="stop">
-      <canvas class="diorama" data-scene="yildiz" width="208" height="140" aria-hidden="true"></canvas>
-      <article class="ticket">
-        <header class="ticket__head"><span>Durak 05</span><span>13:15</span></header>
-        <h2 class="ticket__title" id="t5">Yıldız Parkı</h2>
-        <p class="ticket__body">Burada badminton yürüyüş ve limonataa. HARİKA LİMONATALARI VAR BU ARADA</p>
-      </article>
-    </div>
-  </section>
-
-  <!-- 6 — Sürpriz -->
-  <section class="panel" id="s6" aria-labelledby="t6">
-    <div class="stop">
-      <canvas class="diorama" data-scene="surpriz" width="208" height="140" aria-hidden="true"></canvas>
-      <article class="ticket ticket--secret">
-        <header class="ticket__head"><span>Durak 06</span><span>?</span></header>
-        <h2 class="ticket__title" id="t6">&#63;</h2>
-        <p class="ticket__body">BURASI SÜRPRİZ :p</p>
-      </article>
-    </div>
-  </section>
-
-  <!-- 7 — Çırağan -->
-  <section class="panel" id="s7" aria-labelledby="t7">
-    <div class="stop">
-      <canvas class="diorama" data-scene="ciragan" width="208" height="140" aria-hidden="true"></canvas>
-      <article class="ticket">
-        <header class="ticket__head"><span>Durak 07</span><span>16:30</span></header>
-        <h2 class="ticket__title" id="t7">Çırağan</h2>
-        <p class="ticket__body">Parktan çıkıp sahile ineriz. Çırağan'ın önünden koşu yolu boyunca yürürüz biraz çok güzel manzarası varrr.</p>
-      </article>
-    </div>
-  </section>
-
-  <!-- 8 — Dönüş -->
-  <section class="panel" id="s8" aria-labelledby="t8">
-    <div class="stop">
-      <canvas class="diorama" data-scene="donus" width="208" height="140" aria-hidden="true"></canvas>
-      <article class="ticket">
-        <header class="ticket__head"><span>Durak 08</span><span>akşam</span></header>
-        <h2 class="ticket__title" id="t8">Dönüş</h2>
-        <p class="ticket__body">Beşiktaş'tan Kadıköy vapuruna bineriz vee :(</p>
-      </article>
-    </div>
-  </section>
-
-  <!-- 9 — Son kare -->
-  <section class="panel panel--final" id="s9" aria-labelledby="t9">
-    <div class="final">
-      <figure class="polaroid" id="polaroid">
-        <div class="polaroid__img" id="polaroidImg" role="img" aria-label="Fotoğraf"></div>
-        <figcaption class="polaroid__cap">27.08</figcaption>
-      </figure>
-      <div class="final__copy">
-        <h2 class="final__title" id="t9">Görüşmek üzere</h2>
-        <p class="final__meta">27 Ağustos, Perşembe &middot; 12:00<br>Kadıköy M4 turnikeler, 3–4. çıkış</p>
-        <p class="final__sign">&mdash; Enes</p>
       </div>
-    </div>
-  </section>
+    </section>
 
-</main>
 
-<nav class="rail" id="rail" aria-label="Duraklar"></nav>
+    <!-- ==================== EKRAN 5: SON EKRAN ==================== -->
+    <section class="screen-panel" id="screen-5" aria-label="Kapanış ve Hatıra">
+      <div class="final-wrap">
+        <article class="final-card">
+          <div class="final-ticket-top">
+            <span class="final-ticket-label">Hatıra Sinema Bileti</span>
+            <span class="final-ticket-status">&#10003; REZERVASYON ALINDI</span>
+          </div>
 
-<button class="sound" id="soundBtn" type="button" aria-pressed="false" aria-label="Müziği aç">
-  <svg class="sound__note" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-    <ellipse cx="5.9" cy="11.6" rx="3.5" ry="2.7" transform="rotate(-18 5.9 11.6)"/>
-    <rect x="8.4" y="2.3" width="1.6" height="9.5" rx="0.5"/>
-    <path d="M10 2.3c2.7.6 4.1 2.1 4.2 4.4-.8-1.7-2.1-2.6-4.2-2.8z"/>
-  </svg>
-</button>
+          <div class="final-content">
+            <h2 class="final-big-message">O zaman hazırsan senden mesajını bekliyorum.</h2>
 
-<div class="game" id="game" hidden>
-  <div class="game__box">
-    <div class="game__screen">
-      <canvas id="gameCanvas" width="320" height="200"></canvas>
-    </div>
-    <p class="game__hud">
-      <span id="gameMsg">basılı tut &mdash; fok dalar</span>
-      <span class="game__stats"><b id="gameSimit">0</b> simit &middot; <b id="gameDist">0 m</b></span>
-    </p>
-    <div class="game__btns">
-      <button class="game__again" id="gameAgain" type="button" hidden>Tekrar</button>
-      <button class="game__close" id="gameClose" type="button">Kapat</button>
-    </div>
-  </div>
-</div>
+            <div class="final-summary-box">
+              <div class="final-summary-row">
+                <span>Belirlenen Gün</span>
+                <span id="finalSelectedDay">Bugün</span>
+              </div>
+              <div class="final-summary-row">
+                <span>Seçilen Film</span>
+                <span id="finalSelectedMovie">Köfte Yağmuru</span>
+              </div>
+              <div class="final-summary-row">
+                <span>Oyun Başarısı</span>
+                <span id="finalScoreAchieved">10 / 10 (Kazanıldı!)</span>
+              </div>
+              <div class="final-summary-row">
+                <span>Koltuk Durumu</span>
+                <span>En Güzel Yer (Çift Kişilik) 🍿</span>
+              </div>
+            </div>
 
-<audio id="track-audio" loop preload="none"></audio>
+            <p class="final-handwritten-note">"Harika bir akşam olacak... Enes"</p>
 
-<script src="js/iso.js?v=7"></script>
-<script src="js/sprites.js?v=7"></script>
-<script src="js/scenes.js?v=7"></script>
-<script src="js/sky.js?v=7"></script>
-<script src="js/game.js?v=7"></script>
-<script src="js/main.js?v=7"></script>
+            <div class="final-actions">
+              <button class="btn-cinema" id="btnShareWhatsApp" type="button">
+                <span>WhatsApp'tan Haber Ver 💬</span>
+              </button>
+              <button class="btn-secondary" id="btnReplayAll" type="button">
+                <span>Seçimleri Sıfırla & Başa Dön</span>
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Arka Plan Müziği -->
+  <audio id="track-audio" loop preload="auto" src="assets/audio/muzik.mp3"></audio>
+
+  <!-- Firebase SDK (file:// protokolü ve tarayıcılarla %100 uyumlu CDN) -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+
+  <!-- Komut Dosyaları -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/cinema-game.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>

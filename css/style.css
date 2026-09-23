@@ -1,770 +1,1103 @@
-/* ---------------------------------------------------------------
-   27 Ağustos — jetonlar, dioramalar ve bir Boğaz geçişi
-   Palet: üç renk denizden (Enes), üç renk karadan (İpek).
-   --------------------------------------------------------------- */
+/* ==========================================================================
+   SİNEMA GECESİ DAVETİYESİ — ZANAAT VE RETRO SİNEMA TASARIMI
+   Yapay zeka klişelerinden uzak, elle işlenmiş detaylar, vintage biletler,
+   damga animasyonları ve projektör atmosferi.
+   ========================================================================== */
 
 :root {
-  /* --- oyunun altı rengi --- */
-  --sea-red:    #B4382C;   /* baca kırmızısı */
-  --sea-blue:   #1C4A63;   /* boğaz lacisi   */
-  --sea-rust:   #8C5A38;   /* iskele pası    */
-  --land-green: #5C7F4E;   /* yıldız yeşili  */
-  --land-gold:  #DFAE3E;   /* çırağan sarısı */
-  --land-pink:  #E3A79E;   /* sedef pembe    */
+  /* Renk Paleti: Kadife Sinema Salonu & Antika Bilet Kağıdı */
+  --theater-bg: #0C1015;
+  --theater-surface: #141B22;
+  --theater-surface-hover: #1A242E;
+  
+  --curtain-red: #8B1E26;
+  --curtain-dark: #581016;
+  
+  --brass-gold: #D4AF37;
+  --gold-glow: rgba(212, 175, 55, 0.35);
+  --gold-bright: #F6D56A;
+  
+  --paper-cream: #F7EFE1;
+  --paper-edge: #DFD5C2;
+  --paper-shadow: rgba(0, 0, 0, 0.45);
+  
+  --ink-primary: #1A1F26;
+  --ink-muted: #5A6270;
+  --ink-stamp: #9B2226;
+  
+  --film-reel: #2C353F;
+  --screen-glow: rgba(230, 240, 255, 0.08);
 
-  /* --- nötrler: bilet kâğıdı ve mürekkep --- */
-  --paper:      #EFE6D6;
-  --paper-edge: #DED2BC;
-  --ink:        #17252E;
-  --ink-soft:   #55636B;
+  /* Tipografi */
+  --font-serif: "Newsreader", Georgia, serif;
+  --font-mono: "IBM Plex Mono", monospace;
+  --font-sans: "Archivo", sans-serif;
+  --font-hand: "Caveat", cursive, sans-serif;
 
-  /* --- ritim --- */
-  --gap-xs: 4px;
-  --gap-s:  8px;
-  --gap-m:  16px;
-  --gap-l:  28px;
-  --gap-xl: 48px;
-
-  --panel-w: min(430px, 84vw);
-  --sea-line: 58%;
+  /* Boyutlar */
+  --card-max-w: 480px;
 }
 
-* { box-sizing: border-box; }
-
-html, body {
+/* ---------------- Temel Sıfırlama & Gövde ---------------- */
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
   height: 100%;
   overflow: hidden;
-  background: var(--sea-blue);
-}
-
-body {
-  font-family: "Newsreader", Georgia, serif;
-  color: var(--ink);
+  background-color: var(--theater-bg);
+  color: var(--paper-cream);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  overscroll-behavior: none;
 }
 
-/* ============================ gökyüzü ============================ */
-
-#sky {
+/* ---------------- Projektör & Toz Efekti (Arka Plan) ---------------- */
+#projector-canvas {
   position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
   z-index: 0;
-  display: block;
+  pointer-events: none;
 }
 
-.noscript {
+.theater-light-cone {
   position: fixed;
-  inset: 0;
-  z-index: 9;
-  display: grid;
-  place-content: center;
-  gap: 10px;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140vw;
+  height: 120vh;
+  background: radial-gradient(circle at 50% 0%, rgba(246, 213, 106, 0.07) 0%, rgba(212, 175, 55, 0.02) 40%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ---------------- Üst Bar & Müzik Düğmesi ---------------- */
+.cinema-header {
+  position: fixed;
+  top: max(12px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
+  left: max(16px, env(safe-area-inset-left));
+  height: 48px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.audio-toggle {
+  pointer-events: auto;
+  background: rgba(20, 27, 34, 0.88);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: var(--paper-cream);
+  padding: 8px 14px;
+  min-height: 40px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.25s ease;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.audio-toggle:hover {
+  border-color: var(--brass-gold);
+  background: var(--theater-surface-hover);
+  transform: translateY(-1px);
+}
+
+.audio-toggle__icon {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.audio-toggle.is-playing .audio-toggle__icon {
+  animation: reelSpin 4s linear infinite;
+  fill: var(--brass-gold);
+}
+
+@keyframes reelSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ---------------- Ana Sahne Taşıyıcı (Screen Stage) ---------------- */
+.cinema-stage {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: max(68px, env(safe-area-inset-top, 20px)) max(16px, env(safe-area-inset-right, 16px)) max(28px, env(safe-area-inset-bottom, 20px)) max(16px, env(safe-area-inset-left, 16px));
+  box-sizing: border-box;
+}
+
+.screen-panel {
+  display: none;
+  width: 100%;
+  max-width: var(--card-max-w);
+  margin: auto;
+  opacity: 0;
+  transform: scale(0.96) translateY(20px);
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.screen-panel.active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  pointer-events: auto;
+}
+
+/* ==========================================================================
+   EKRAN 1: VİNTAGE SİNEMA BİLETİ (GİRİŞ DAVETİYESİ)
+   ========================================================================== */
+.ticket-stub {
+  position: relative;
+  width: 100%;
+  background: var(--paper-cream);
+  color: var(--ink-primary);
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  filter: drop-shadow(0 10px 25px rgba(0,0,0,0.5));
+}
+
+/* Gerçekçi Perforasyon (Delikli Yırtma Kenarı) */
+.ticket-stub::before,
+.ticket-stub::after {
+  content: "";
+  position: absolute;
+  top: 68%;
+  width: 28px;
+  height: 28px;
+  background-color: var(--theater-bg);
+  border-radius: 50%;
+  z-index: 5;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+.ticket-stub::before { left: -14px; }
+.ticket-stub::after { right: -14px; }
+
+.ticket-divider {
+  position: relative;
+  height: 1px;
+  border-top: 2px dashed var(--paper-edge);
+  margin: 18px 0;
+}
+
+.ticket-header {
+  background: linear-gradient(135deg, var(--curtain-red), var(--curtain-dark));
+  color: var(--paper-cream);
+  padding: 18px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 3px double var(--brass-gold);
+}
+
+.ticket-marquee {
+  display: flex;
+  flex-direction: column;
+}
+
+.ticket-subtitle {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--brass-gold);
+  text-transform: uppercase;
+}
+
+.ticket-main-title {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.ticket-number {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brass-gold);
+  border: 1px dashed rgba(212, 175, 55, 0.5);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.ticket-body {
   padding: 24px;
   text-align: center;
-  background: var(--sea-blue);
-  color: var(--paper);
-  font-size: 17px;
-  line-height: 1.5;
 }
 
-/* ============================ raylar ============================= */
-
-.track {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: stretch;
-  height: 100dvh;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-  outline: none;
+.ticket-quote {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-style: italic;
+  color: var(--ink-primary);
+  line-height: 1.45;
+  margin-bottom: 14px;
 }
-.track::-webkit-scrollbar { display: none; }
 
-.panel {
-  flex: 0 0 var(--panel-w);
-  scroll-snap-align: center;
+.ticket-desc {
+  font-size: 14px;
+  color: var(--ink-muted);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.ticket-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.04);
+  padding: 14px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--paper-edge);
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.ticket-info-item label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  letter-spacing: 0.05em;
+}
+
+.ticket-info-item span {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--curtain-red);
+}
+
+.ticket-footer {
+  padding: 0 24px 22px;
   display: flex;
   flex-direction: column;
+  align-items: center;
+}
+
+/* Vintage Altın/Kırmızı Buton */
+.btn-cinema {
+  width: 100%;
+  display: inline-flex;
   justify-content: center;
   align-items: center;
-  padding: 0 clamp(12px, 3vw, 28px);
-  position: relative;
-}
-.panel--intro { flex-basis: min(560px, 100vw); }
-.panel--wide  { flex-basis: min(480px, 92vw); }
-.panel--final { flex-basis: min(520px, 96vw); }
-
-/* boşluk: rota başta ve sonda nefes alsın */
-.track::before,
-.track::after {
-  content: "";
-  flex: 0 0 max(2vw, 12px);
-}
-
-/* ============================ açılış ============================= */
-
-.intro {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--gap-m);
-}
-
-.intro__line {
-  margin: 0;
-  font-size: clamp(15px, 4vw, 19px);
-  font-style: italic;
-  font-weight: 300;
-  color: #F3EFE6;
-  text-shadow: 0 1px 6px rgba(10, 30, 45, .45);
-  letter-spacing: .01em;
-}
-
-.intro__date {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  line-height: .88;
-  font-family: "Archivo", system-ui, sans-serif;
-  font-variation-settings: "wdth" 118, "wght" 780;
-  color: #FBF7EF;
+  gap: 10px;
+  padding: 14px 28px;
+  background: linear-gradient(180deg, var(--curtain-red) 0%, var(--curtain-dark) 100%);
+  color: var(--paper-cream);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  text-shadow: 0 3px 0 rgba(15, 40, 58, .28);
-}
-.intro__date span:first-child { font-size: clamp(84px, 26vw, 150px); letter-spacing: -.03em; }
-.intro__date span:last-child  { font-size: clamp(29px, 8.8vw, 50px); letter-spacing: .05em; margin-top: 2px; }
-
-.intro__meta {
-  margin: 0;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
-  font-size: clamp(10px, 2.9vw, 12.5px);
-  font-weight: 500;
-  letter-spacing: .06em;
-  color: #EAE0CE;
-  background: rgba(15, 37, 52, .5);
-  border: 1px solid rgba(239, 230, 214, .22);
-  padding: 7px 12px;
-  border-radius: 2px;
-  backdrop-filter: blur(3px);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(139, 30, 38, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.diorama--intro {
-  width: min(330px, 84vw);
-  margin-top: var(--gap-s);
-  filter: none;
+.btn-cinema:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(139, 30, 38, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border-color: var(--brass-gold);
 }
 
-.swipe {
-  position: absolute;
-  bottom: clamp(58px, 11vh, 92px);
-  left: 50%;
-  transform: translateX(-50%);
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 11px;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  color: rgba(247, 242, 232, .82);
-  white-space: nowrap;
-}
-.swipe__arrow {
-  display: inline-block;
-  font-size: 15px;
-  animation: nudge 2.1s cubic-bezier(.4, 0, .2, 1) infinite;
-}
-@keyframes nudge {
-  0%, 55%, 100% { transform: translateX(0);   opacity: .75; }
-  25%           { transform: translateX(7px); opacity: 1; }
+.btn-cinema:active {
+  transform: translateY(1px);
 }
 
-/* ============================ duraklar =========================== */
-
-.stop {
+.ticket-barcode {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(10px, 2.4vh, 20px);
-  width: 100%;
+  gap: 4px;
+  margin-top: 14px;
+  opacity: 0.75;
 }
 
-.diorama {
-  width: min(334px, 88%);
-  height: auto;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  filter: drop-shadow(0 10px 14px rgba(9, 28, 42, .34));
-}
-
-/* --- bilet --- */
-
-.ticket {
-  width: 100%;
-  max-width: 380px;
-  background: var(--paper);
-  color: var(--ink);
-  padding: 15px 17px 17px;
-  position: relative;
-  border-radius: 2px;
-  box-shadow:
-    0 1px 0 var(--paper-edge),
-    0 14px 26px -10px rgba(8, 26, 40, .5);
-  /* biletin sağ kenarı yırtık gibi dursun */
-  clip-path: polygon(
-    0 0, 100% 0,
-    100% calc(100% - 9px), calc(100% - 5px) 100%,
-    0 100%
+.barcode-lines {
+  height: 28px;
+  width: 180px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--ink-primary) 0px,
+    var(--ink-primary) 2px,
+    transparent 2px,
+    transparent 4px,
+    var(--ink-primary) 4px,
+    var(--ink-primary) 7px,
+    transparent 7px,
+    transparent 9px,
+    var(--ink-primary) 9px,
+    var(--ink-primary) 10px,
+    transparent 10px,
+    transparent 13px
   );
 }
-.ticket::before {
-  content: "";
-  position: absolute;
-  left: 0; right: 0;
-  top: 40px;
-  border-top: 1px dashed rgba(23, 37, 46, .26);
+
+.barcode-digits {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.35em;
+  color: var(--ink-muted);
 }
 
-.ticket__head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: .13em;
-  text-transform: uppercase;
-  color: var(--sea-red);
-  padding-bottom: 13px;
-}
-.ticket__head span:last-child { color: var(--ink-soft); font-weight: 500; }
-
-.ticket__title {
-  margin: 13px 0 7px;
-  font-family: "Archivo", system-ui, sans-serif;
-  font-variation-settings: "wdth" 112, "wght" 700;
-  font-size: clamp(27px, 7.4vw, 37px);
-  line-height: .96;
-  letter-spacing: -.018em;
-}
-
-.ticket__body {
-  margin: 0;
-  font-size: clamp(14.5px, 3.7vw, 16.5px);
-  line-height: 1.5;
-  font-weight: 350;
-  color: #2C3B44;
-  text-wrap: pretty;
-}
-
-/* Oyun düğmesi.
-   Düz kırmızı bir çubuk olarak başladı, biletin geri kalanının yanında
-   kaba duruyordu. Şimdi lacivert bir hap: solda krem madalyonun içinde
-   sahnelerdeki gerçek piksel fok, sağda altın bir ok. Işık huzmesi
-   arada bir geçiyor, sürekli oynamıyor. */
-.play {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  margin-top: 17px;
+/* ==========================================================================
+   EKRAN 2: GÜN SEÇİMİ (MÜREKKEPLİ ISTAMPA DAMGASI)
+   ========================================================================== */
+.day-card {
   width: 100%;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  column-gap: 13px;
-  text-align: left;
-  padding: 9px 14px 9px 9px;
-  border: none;
-  border-radius: 999px;
-  background:
-    radial-gradient(120% 180% at 12% 0%, #2A6A8B 0%, rgba(42,106,139,0) 62%),
-    var(--sea-blue);
-  color: #F6F0E4;
-  cursor: pointer;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, .16),
-    0 3px 0 #123A50,
-    0 14px 22px -12px rgba(10, 35, 52, .9);
-  transition: transform .14s ease, box-shadow .14s ease, filter .2s ease;
-}
-.play:hover { filter: brightness(1.08); }
-.play:active {
-  transform: translateY(3px);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 0 0 #123A50, 0 6px 12px -8px rgba(10,35,52,.9);
+  background: var(--paper-cream);
+  color: var(--ink-primary);
+  border-radius: 12px;
+  padding: 30px 24px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+  text-align: center;
+  position: relative;
 }
 
-.play__madalyon {
-  width: 42px; height: 42px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: radial-gradient(circle at 34% 28%, #FFFDF7, #EADFC9);
-  box-shadow: inset 0 0 0 1px rgba(23, 37, 46, .1), 0 2px 5px -2px rgba(10, 35, 52, .6);
-}
-.play__fok {
-  width: 30px; height: 24px;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  display: block;
-}
-
-.play__baslik {
-  display: block;
-  font-family: "Archivo", system-ui, sans-serif;
-  font-variation-settings: "wdth" 106, "wght" 700;
-  font-size: clamp(16px, 4.4vw, 18px);
-  line-height: 1.05;
-  letter-spacing: -.012em;
-}
-.play__alt {
-  display: block;
-  margin-top: 3px;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 9.5px;
-  letter-spacing: .09em;
+.screen-step-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 11px;
   text-transform: uppercase;
-  color: rgba(246, 240, 228, .62);
+  color: var(--curtain-red);
+  background: rgba(139, 30, 38, 0.08);
+  border: 1px solid rgba(139, 30, 38, 0.2);
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 12px;
 }
 
-.play__ok {
-  width: 26px; height: 26px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: rgba(223, 174, 62, .16);
-}
-.play__ok svg { width: 15px; height: 11px; fill: var(--land-gold); }
-.play__ok { transition: transform .18s cubic-bezier(.3, 1.4, .5, 1), background .2s ease; }
-.play:hover .play__ok { transform: translateX(3px); background: rgba(223, 174, 62, .3); }
-
-/* üstünden geçen ışık */
-.play::after {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 -55%;
-  width: 42%;
-  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .22), transparent);
-  animation: playParilti 4.6s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 2;
-}
-@keyframes playParilti {
-  0%, 62%   { left: -55%; }
-  88%, 100% { left: 112%; }
+.screen-title {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--ink-primary);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .play::after { display: none; }
+.screen-desc {
+  font-size: 14px;
+  color: var(--ink-muted);
+  line-height: 1.5;
+  margin-bottom: 26px;
 }
 
-/* sürpriz bileti: ters basılmış, mürekkep koyu */
-.ticket--secret {
-  background: var(--sea-blue);
-  color: var(--paper);
-  box-shadow: 0 1px 0 #143A4F, 0 14px 26px -10px rgba(8, 26, 40, .55);
-}
-.ticket--secret::before { border-top-color: rgba(239, 230, 214, .3); }
-.ticket--secret .ticket__head       { color: var(--land-gold); }
-.ticket--secret .ticket__head span:last-child { color: rgba(239, 230, 214, .6); }
-.ticket--secret .ticket__title {
-  font-size: clamp(46px, 13vw, 66px);
-  color: var(--land-gold);
-  line-height: 1;
-}
-.ticket--secret .ticket__body {
-  /* Metin büyük harfle yazıldı; italik serifle birlikte okunmuyordu. */
-  color: rgba(239, 230, 214, .86);
-  font-family: "Archivo", system-ui, sans-serif;
-  font-variation-settings: "wdth" 104, "wght" 600;
-  font-size: clamp(15px, 4vw, 17px);
-  letter-spacing: .02em;
-}
-
-/* ============================ palet ============================== */
-
-.ticket--palette { max-width: 420px; }
-
-.palette {
+.day-options {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--gap-m);
-  margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px dashed rgba(23, 37, 46, .26);
-}
-.palette__who {
-  margin: 0 0 9px;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-.swatches { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
-.swatches li {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  font-size: 13px;
-  line-height: 1.2;
-  font-weight: 400;
-}
-.chip {
-  flex: 0 0 auto;
-  width: 20px;
-  height: 20px;
-  border-radius: 1px;
-  box-shadow: inset 0 0 0 1px rgba(23, 37, 46, .18);
-}
-.chip__hex {
-  display: block;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 9.5px;
-  letter-spacing: .04em;
-  color: var(--ink-soft);
-  margin-top: 1px;
+  gap: 16px;
 }
 
-/* ============================ son kare =========================== */
-
-.final {
+.btn-day-stamp {
+  position: relative;
+  background: #FFFFFF;
+  border: 2px solid var(--paper-edge);
+  border-radius: 10px;
+  padding: 22px 14px;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(14px, 3vh, 24px);
+  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 
-.polaroid {
-  margin: 0;
-  background: #FBF8F1;
-  padding: 11px 11px 34px;
-  border-radius: 1px;
-  transform: rotate(-2.2deg);
-  box-shadow: 0 16px 30px -12px rgba(8, 26, 40, .6);
+.btn-day-stamp:hover {
+  border-color: var(--curtain-red);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.btn-day-stamp:active {
+  transform: translateY(0);
+}
+
+.day-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--brass-gold);
+  background: var(--theater-surface);
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+.day-name {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  margin-top: 4px;
+}
+
+.day-sub {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--curtain-red);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Basılan Isı Damgası (Stamp Mark) */
+.stamp-seal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-12deg) scale(0);
+  border: 3px solid var(--ink-stamp);
+  color: var(--ink-stamp);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  padding: 6px 12px;
+  text-transform: uppercase;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 0 2px rgba(155, 34, 38, 0.2);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+}
+
+.btn-day-stamp.stamped .stamp-seal {
+  transform: translate(-50%, -50%) rotate(-12deg) scale(1);
+  opacity: 0.95;
+}
+
+/* ==========================================================================
+   EKRAN 3: 3 GİZEMLİ SÜRPRİZ FİLM KUTUSU
+   ========================================================================== */
+.movies-card {
+  width: 100%;
+  background: var(--paper-cream);
+  color: var(--ink-primary);
+  border-radius: 12px;
+  padding: 26px 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+  text-align: center;
+}
+
+.mystery-cards-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.mystery-box {
   position: relative;
+  background: #FFFFFF;
+  border: 2px dashed var(--paper-edge);
+  border-radius: 10px;
+  padding: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-align: left;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.04);
 }
-/* Fotoğraf yatay çıktı (kare defter sayfası), polaroid çerçevesini
-   ona göre yatırdım — dikey çerçevede kenarlardan kırpılıyordu. */
-.polaroid__img {
-  width: min(310px, 76vw);
-  aspect-ratio: 7 / 6;
-  background: #DCD5C8 center/cover no-repeat;
-  display: block;
+
+.mystery-box:hover {
+  border-color: var(--curtain-red);
+  transform: translateX(4px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
 }
-.polaroid__img::after {
-  content: "fotoğraf buraya";
+
+.mystery-box.selected {
+  border-color: var(--curtain-red);
+  border-style: solid;
+  background: #FFFBF7;
+  box-shadow: 0 8px 24px rgba(139, 30, 38, 0.15);
+}
+
+.mystery-icon-frame {
+  width: 54px;
+  height: 54px;
+  background: var(--theater-surface);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  font-family: "IBM Plex Mono", monospace;
+  flex-shrink: 0;
+  transition: transform 0.4s ease;
+}
+
+.mystery-icon {
+  font-size: 24px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+}
+
+.mystery-info {
+  flex-grow: 1;
+}
+
+.mystery-badge {
+  font-family: var(--font-mono);
   font-size: 10px;
-  letter-spacing: .12em;
+  color: var(--curtain-red);
+  font-weight: 600;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #9A9184;
 }
-.polaroid__img.is-loaded::after { content: none; }
-.polaroid__cap {
-  position: absolute;
-  left: 0; right: 0;
-  bottom: 9px;
-  text-align: center;
-  font-family: "IBM Plex Mono", monospace;
+
+.mystery-title {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  margin-top: 2px;
+}
+
+.mystery-desc {
+  font-size: 12px;
+  color: var(--ink-muted);
+  line-height: 1.35;
+  margin-top: 2px;
+}
+
+.mystery-secret-tape {
+  display: inline-block;
+  background: #E2E8F0;
+  color: #475569;
+  font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: .18em;
-  color: #6E6459;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  margin-top: 4px;
 }
 
-.final__copy { text-align: center; color: #F5F0E6; }
-.final__title {
-  margin: 0 0 8px;
-  font-family: "Archivo", system-ui, sans-serif;
-  font-variation-settings: "wdth" 112, "wght" 700;
-  font-size: clamp(25px, 7vw, 34px);
-  letter-spacing: -.015em;
-  text-shadow: 0 2px 10px rgba(10, 30, 45, .5);
+/* Seçilen Kutunun Açılma Hali */
+.mystery-box.revealed .mystery-secret-tape {
+  display: none;
 }
-.final__meta {
-  margin: 0;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 11px;
-  line-height: 1.7;
-  letter-spacing: .05em;
-  color: rgba(245, 240, 230, .82);
+.mystery-box.revealed .mystery-title {
+  color: var(--curtain-red);
 }
-.final__sign {
-  margin: 14px 0 0;
-  font-style: italic;
-  font-size: 16px;
-  color: rgba(245, 240, 230, .9);
+.mystery-box.revealed .mystery-icon-frame {
+  border-color: var(--brass-gold);
+  transform: rotate(6deg) scale(1.08);
 }
 
-/* ============================ ray + ses ========================== */
-
-.rail {
-  position: fixed;
-  left: 50%;
-  bottom: max(18px, env(safe-area-inset-bottom));
-  transform: translateX(-50%);
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  gap: 0;
-  padding: 8px 12px;
-  background: rgba(12, 32, 46, .42);
-  border: 1px solid rgba(239, 230, 214, .16);
-  border-radius: 100px;
-  backdrop-filter: blur(6px);
+/* Onay ve Oyuna Geç Butonu */
+#btnProceedGame {
+  display: none;
 }
-.rail__dot {
-  position: relative;
-  width: 22px;
-  height: 22px;
-  border: none;
-  background: none;
-  cursor: pointer;
-  padding: 0;
-}
-.rail__dot::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: rgba(239, 230, 214, .38);
-  transition: background .2s ease, width .2s ease, height .2s ease;
-}
-.rail__dot:hover::before { background: rgba(239, 230, 214, .7); }
-.rail__dot.is-on::before {
-  background: var(--land-gold);
-  width: 9px; height: 9px;
+#btnProceedGame.visible {
+  display: inline-flex;
+  animation: bounceIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.sound {
-  position: fixed;
-  top: max(16px, env(safe-area-inset-top));
-  right: 16px;
-  z-index: 3;
-  width: 40px; height: 40px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  border: 1px solid rgba(239, 230, 214, .2);
-  background: rgba(12, 32, 46, .42);
-  backdrop-filter: blur(6px);
-  cursor: pointer;
-  padding: 0;
-}
-.sound__note {
-  width: 17px;
-  height: 17px;
-  fill: rgba(239, 230, 214, .82);
-  transition: fill .2s ease;
-}
-.sound[aria-pressed="true"] .sound__note {
-  fill: var(--land-gold);
-  animation: notaSalla 1.15s ease-in-out infinite;
-  transform-origin: 30% 75%;
-}
-@keyframes notaSalla {
-  0%, 100% { transform: rotate(-7deg) translateY(0); }
-  50%      { transform: rotate(7deg)  translateY(-1.5px); }
+@keyframes bounceIn {
+  0% { opacity: 0; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
 }
 
-/* ============================ oyun =============================== */
-
-.game {
-  position: fixed;
-  inset: 0;
-  z-index: 6;
-  display: grid;
-  place-items: center;
-  background: rgba(9, 25, 37, .82);
-  backdrop-filter: blur(4px);
-  padding: 14px;
-}
-.game[hidden] { display: none; }
-
-.game__box {
-  background: var(--paper);
-  padding: 12px;
-  border-radius: 3px;
-  width: min(560px, 100%);
-  box-shadow: 0 20px 50px -16px rgba(0, 0, 0, .7);
-}
-
-/* Tuval kendi çerçevesinde dursun: kenarında ince bir mürekkep hattı
-   olunca oyun ekranı bir aygıt gibi okunuyor. */
-.game__screen {
-  position: relative;
-  border: 2px solid var(--ink);
-  border-radius: 2px;
-  overflow: hidden;
-  line-height: 0;
-}
-#gameCanvas {
+/* ==========================================================================
+   EKRAN 4: RETRO PİKSEL MİNİ OYUN KABİNİ
+   ========================================================================== */
+.game-cabinet {
   width: 100%;
-  height: auto;
+  background: var(--theater-surface);
+  border: 2px solid rgba(212, 175, 55, 0.4);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cabinet-marquee {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 6px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 12px;
+}
+
+.cabinet-title-wrap {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.cabinet-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--brass-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.cabinet-title {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.cabinet-score-badge {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--brass-gold);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+/* Piksel Oyun Ekranı */
+.game-viewport {
+  position: relative;
+  width: 100%;
+  background: #000000;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #2A3644;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+  aspect-ratio: 4 / 3;
+}
+
+#cinemaGameCanvas {
+  width: 100%;
+  height: 100%;
   display: block;
+  image-rendering: -moz-crisp-edges;
   image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  touch-action: none;
+}
+
+/* İlerleme Çubuğu */
+.game-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+
+.game-progress-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--brass-gold), #22C55E);
+  transition: width 0.25s ease;
+}
+
+/* Mobil / Masaüstü Kontrol İpuçları */
+.game-controls-bar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.game-hint {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #94A3B8;
+}
+
+.mobile-dpad {
+  display: none;
+  gap: 10px;
+}
+
+@media (pointer: coarse) {
+  .mobile-dpad {
+    display: flex;
+  }
+  .desktop-hint {
+    display: none;
+  }
+}
+
+.btn-dpad {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 14px;
   cursor: pointer;
   user-select: none;
-  -webkit-user-select: none;
-  -webkit-tap-highlight-color: transparent;
+}
+.btn-dpad:active {
+  background: rgba(255, 255, 255, 0.3);
 }
 
-.game__hud {
+/* ==========================================================================
+   EKRAN 5: SON EKRAN (HATIRA BİLETİ & KİŞİSEL NOT)
+   ========================================================================== */
+.final-wrap {
+  width: 100%;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.final-card {
+  width: 100%;
+  background: var(--paper-cream);
+  color: var(--ink-primary);
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+}
+
+.final-ticket-top {
+  background: linear-gradient(135deg, var(--curtain-red), var(--curtain-dark));
+  color: var(--paper-cream);
+  padding: 16px 20px;
+  display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  min-height: 17px;          /* satır sayısı değişince düğmeler zıplamasın */
-  gap: 4px 12px;
-  margin: 11px 2px 0;
-  font-family: "IBM Plex Mono", monospace;
+  align-items: center;
+  border-bottom: 2px dashed var(--brass-gold);
+}
+
+.final-ticket-label {
+  font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: .06em;
+  letter-spacing: 0.15em;
+  color: var(--brass-gold);
   text-transform: uppercase;
-  color: var(--ink-soft);
 }
-.game__hud #gameMsg { text-transform: none; letter-spacing: .01em; font-size: 12px; }
-.game__stats { white-space: nowrap; }
-.game__stats b { color: var(--sea-red); font-weight: 600; }
 
-.game__btns { display: flex; gap: 8px; margin-top: 11px; }
-.game__again,
-.game__close {
-  flex: 1;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 11.5px;
-  letter-spacing: .1em;
+.final-ticket-status {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.final-content {
+  padding: 24px;
+  text-align: center;
+}
+
+.final-big-message {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--curtain-red);
+  margin-bottom: 16px;
+}
+
+.final-summary-box {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--paper-edge);
+  border-radius: 8px;
+  padding: 14px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.final-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.final-summary-row span:first-child {
+  font-family: var(--font-mono);
+  color: var(--ink-muted);
   text-transform: uppercase;
-  padding: 12px 10px;
-  border-radius: 2px;
-  cursor: pointer;
-  border: 1px solid rgba(23, 37, 46, .25);
+  font-size: 11px;
+}
+
+.final-summary-row span:last-child {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--ink-primary);
+}
+
+.final-handwritten-note {
+  font-family: var(--font-hand);
+  font-size: 26px;
+  color: #334155;
+  line-height: 1.3;
+  margin-bottom: 18px;
+  transform: rotate(-1deg);
+}
+
+.final-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-secondary {
+  width: 100%;
+  padding: 12px;
   background: transparent;
-  color: var(--ink);
+  border: 1px solid var(--paper-edge);
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
-.game__again {
-  border-color: transparent;
-  background: var(--sea-blue);
-  color: var(--paper);
-  flex: 1.4;
-}
-.game__again[hidden] { display: none; }
-.game__close:hover { background: rgba(23, 37, 46, .07); }
-.game__again:hover  { background: #245F7E; }
-
-/* Telefonda oyun neredeyse tam ekran olsun: dar ekranda kenar boşluğu
-   oynanacak alanı yiyordu. */
-@media (max-width: 560px) {
-  .game { padding: 8px; }
-  .game__box { padding: 8px; }
-  .game__hud { font-size: 10px; margin-top: 9px; }
-  .game__hud #gameMsg { font-size: 11px; }
-  .game__btns { margin-top: 9px; }
-  .game__again, .game__close { padding: 13px 8px; }
+.btn-secondary:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--ink-primary);
 }
 
-/* ============================ erişilebilirlik ==================== */
+/* ==========================================================================
+   MOBİL & RESPONSIVE GELİŞMİŞ UYUMLULUK
+   ========================================================================== */
 
-:focus-visible {
-  outline: 2px solid var(--land-gold);
-  outline-offset: 3px;
+/* Mobil Dokunmatik D-Pad Butonları */
+.mobile-dpad {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  * { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
-  .track { scroll-behavior: auto; }
+.btn-dpad {
+  flex: 1;
+  min-height: 48px;
+  background: linear-gradient(180deg, #2D3A49 0%, #1A242F 100%);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  color: #FFFFFF;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: all 0.15s ease;
 }
 
-/* geniş ekran: diorama ve bilet yan yana durmasın, dikey akış daha okunur —
-   ama biletin genişliğini artırıp yazıyı biraz büyütelim */
-@media (min-width: 900px) {
-  :root { --panel-w: 460px; }
-  .diorama { width: min(352px, 86%); }
+.btn-dpad:active {
+  background: var(--curtain-red);
+  border-color: var(--brass-gold);
+  transform: translateY(2px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
 }
 
-/* alçak ekran (yatay telefon): diorama küçülsün ki bilet kesilmesin */
-@media (max-height: 620px) {
-  .diorama { width: min(250px, 62%); }
-  .ticket__body { font-size: 13.5px; }
-  .swipe { bottom: 48px; }
+/* WhatsApp Butonuna Özel Canlı Renk */
+#btnShareWhatsApp {
+  background: linear-gradient(180deg, #15803D 0%, #166534 100%);
+  border-color: #22C55E;
+}
+#btnShareWhatsApp:hover {
+  border-color: #4ADE80;
+  box-shadow: 0 8px 24px rgba(34, 197, 94, 0.4);
 }
 
-/* Telefon yan çevrildiğinde yükseklik 360 pikselin altına düşüyor;
-   bilet, diorama ve oyun kutusu ekrandan taşıyordu. Bu boyda her şeyi
-   sıkıştırıyorum — plan yine tek bakışta okunuyor. */
-@media (max-height: 470px) {
-  .diorama { width: min(176px, 32%); }
-  .diorama--intro { width: min(180px, 30vw); }
-  .stop { gap: 6px; }
+/* 480px Altı Mobil Cihazlar */
+@media (max-width: 480px) {
+  .cinema-stage {
+    padding: max(60px, env(safe-area-inset-top, 16px)) 12px max(24px, env(safe-area-inset-bottom, 16px)) 12px;
+  }
 
-  .ticket { padding: 9px 12px 11px; }
-  .ticket::before { top: 27px; }
-  .ticket__head { font-size: 9px; padding-bottom: 7px; }
-  .ticket__title { font-size: 21px; margin: 8px 0 4px; }
-  .ticket__body { font-size: 12.5px; line-height: 1.4; }
-  .ticket--secret .ticket__title { font-size: 34px; }
-  .ticket--secret .ticket__body { font-size: 13px; }
+  .ticket-stub::before,
+  .ticket-stub::after {
+    width: 22px;
+    height: 22px;
+  }
+  .ticket-stub::before { left: -11px; }
+  .ticket-stub::after { right: -11px; }
 
-  .play { margin-top: 10px; padding: 6px 11px 6px 6px; column-gap: 9px; }
-  .play__madalyon { width: 32px; height: 32px; }
-  .play__fok { width: 23px; height: 18px; }
-  .play__baslik { font-size: 14px; }
-  .play__alt { display: none; }
-  .play__ok { width: 21px; height: 21px; }
+  .ticket-header {
+    padding: 14px 18px;
+  }
+  .ticket-main-title {
+    font-size: 22px;
+  }
+  .ticket-body {
+    padding: 18px 14px 14px;
+  }
+  .ticket-quote {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  .ticket-desc {
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+  .ticket-info-grid {
+    padding: 10px 8px;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .ticket-info-item label {
+    font-size: 9px;
+  }
+  .ticket-info-item span {
+    font-size: 11px;
+  }
+  .ticket-footer {
+    padding: 0 16px 18px;
+  }
+  .btn-cinema {
+    min-height: 48px;
+    padding: 12px 20px;
+    font-size: 13px;
+  }
+  .barcode-lines {
+    width: 140px;
+    height: 24px;
+  }
 
-  .palette { margin-top: 10px; padding-top: 9px; gap: 10px; }
-  .palette__who { font-size: 9px; margin-bottom: 6px; }
-  .swatches { gap: 5px; }
-  .swatches li { font-size: 11px; }
-  .chip { width: 15px; height: 15px; }
-  .chip__hex { font-size: 8px; }
+  /* 2. Ekran */
+  .day-card {
+    padding: 24px 16px;
+  }
+  .screen-title {
+    font-size: 22px;
+  }
+  .screen-desc {
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+  .btn-day-stamp {
+    padding: 18px 8px;
+    min-height: 96px;
+  }
+  .day-name {
+    font-size: 22px;
+  }
+  .day-sub {
+    font-size: 11px;
+  }
 
-  .intro { gap: 8px; }
-  .intro__line { font-size: 13px; }
-  .intro__date span:first-child { font-size: 54px; }
-  .intro__date span:last-child  { font-size: 21px; }
-  .intro__meta { font-size: 9px; padding: 5px 9px; }
-  .swipe { bottom: 32px; font-size: 9px; }
+  /* 3. Ekran */
+  .movies-card {
+    padding: 20px 14px;
+  }
+  .mystery-cards-grid {
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .mystery-box {
+    padding: 12px;
+    gap: 12px;
+  }
+  .mystery-icon-frame {
+    width: 44px;
+    height: 44px;
+  }
+  .mystery-icon {
+    font-size: 20px;
+  }
+  .mystery-title {
+    font-size: 16px;
+  }
+  .mystery-desc {
+    font-size: 11px;
+  }
 
-  .final { gap: 8px; }
-  .polaroid { padding: 7px 7px 21px; }
-  .polaroid__img { width: min(196px, 30vw); }
-  .polaroid__cap { font-size: 9px; bottom: 6px; }
-  .final__title { font-size: 20px; margin-bottom: 4px; }
-  .final__meta { font-size: 9px; line-height: 1.5; }
-  .final__sign { font-size: 13px; margin-top: 8px; }
+  /* 4. Ekran (Oyun) */
+  .game-cabinet {
+    padding: 12px;
+  }
+  .cabinet-marquee {
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+  }
+  .cabinet-title {
+    font-size: 12px;
+  }
+  .cabinet-sub {
+    font-size: 9px;
+  }
 
-  .rail { bottom: 6px; padding: 5px 9px; }
-  .rail__dot { width: 17px; height: 17px; }
-  .sound { width: 32px; height: 32px; top: 8px; right: 8px; }
-  .sound__note { width: 14px; height: 14px; }
+  /* 5. Ekran */
+  .final-content {
+    padding: 18px 14px;
+  }
+  .final-big-message {
+    font-size: 20px;
+    margin-bottom: 14px;
+  }
+  .final-summary-box {
+    padding: 12px;
+    margin-bottom: 14px;
+  }
+  .final-summary-row {
+    font-size: 12px;
+  }
+  .final-handwritten-note {
+    font-size: 22px;
+  }
+}
 
-  .game { padding: 6px; }
-  .game__box { padding: 6px; }
-  .game__screen { display: flex; justify-content: center; }
-  #gameCanvas { width: auto; max-width: 100%; max-height: calc(100dvh - 96px); }
-  .game__hud { font-size: 9px; margin-top: 6px; min-height: 12px; }
-  .game__hud #gameMsg { font-size: 10px; }
-  .game__btns { margin-top: 6px; }
-  .game__again, .game__close { padding: 8px; font-size: 10px; }
+/* Küçük Dikey Yükseklikli Cihazlar (Landscape veya Küçük Ekranlar) */
+@media (max-height: 680px) {
+  .cinema-stage {
+    padding-top: 54px;
+    padding-bottom: 18px;
+  }
+  .ticket-body {
+    padding: 14px 12px;
+  }
+  .ticket-info-grid {
+    margin-bottom: 10px;
+  }
+  .ticket-divider {
+    margin: 10px 0;
+  }
+  .game-viewport {
+    max-height: 220px;
+  }
 }
