@@ -42,10 +42,28 @@ function initFirebase() {
 
 // Gün ve Seçilen Filmi Firestore'a Kaydetme
 async function saveCinemaRSVP(data) {
+  const now = new Date();
+  
+  // Türkiye Yerel Saati ve Detaylı Zaman Etiketleri
+  const timeFormatted = now.toLocaleTimeString("tr-TR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+  const dateFormatted = now.toLocaleDateString("tr-TR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric"
+  });
+  const fullDateTime = `${dateFormatted} - ${timeFormatted}`;
+
   const payload = {
     day: data.day || "Bugün",
     movie: data.movie || "Seçilmedi",
-    timestamp: new Date().toISOString(),
+    saat: timeFormatted,             // Örn: "19:54:12" (Saat:Dakika:Saniye)
+    tarih: dateFormatted,            // Örn: "23 Eylül 2026"
+    tarih_saat: fullDateTime,        // Örn: "23 Eylül 2026 - 19:54:12"
+    timestamp: now.toISOString(),
     userAgent: navigator.userAgent
   };
 
@@ -68,6 +86,7 @@ async function saveCinemaRSVP(data) {
       const docRef = await db.collection("cinema_invites").add(payload);
       console.log("🎉 SEÇİM FİREBASE FİRESTORE'A BAŞARIYLA YAZILDI!");
       console.log("📄 Belge ID:", docRef.id);
+      console.log("⏰ Zaman Etiketi:", payload.tarih_saat);
       return { success: true, id: docRef.id, mode: "firestore-sdk" };
     } catch (err) {
       console.warn("⚠️ Firestore SDK ile kaydedilemedi, REST API deneniyor:", err);
@@ -81,6 +100,9 @@ async function saveCinemaRSVP(data) {
       fields: {
         day: { stringValue: payload.day },
         movie: { stringValue: payload.movie },
+        saat: { stringValue: payload.saat },
+        tarih: { stringValue: payload.tarih },
+        tarih_saat: { stringValue: payload.tarih_saat },
         timestamp: { stringValue: payload.timestamp },
         userAgent: { stringValue: payload.userAgent }
       }

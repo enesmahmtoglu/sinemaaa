@@ -502,8 +502,10 @@
   }
 
   /* ==========================================================================
-     2. SES KONTROLÜ (ARKA PLAN MÜZİĞİ)
+     2. SES KONTROLÜ (ARKA PLAN MÜZİĞİ & MOBİL OTO-BAŞLATICI)
      ========================================================================== */
+  let playMusic = () => {};
+
   function initAudioController() {
     const audio = document.getElementById("track-audio");
     const toggleBtn = document.getElementById("audioToggle");
@@ -511,37 +513,46 @@
 
     let isPlaying = false;
 
-    toggleBtn.addEventListener("click", () => {
-      if (isPlaying) {
-        audio.pause();
-        toggleBtn.classList.remove("is-playing");
-        toggleBtn.querySelector(".audio-toggle__text").textContent = "Müziği Aç";
-        isPlaying = false;
-      } else {
-        audio.play().then(() => {
-          toggleBtn.classList.add("is-playing");
-          toggleBtn.querySelector(".audio-toggle__text").textContent = "Müzik Çalıyor";
-          isPlaying = true;
-        }).catch((err) => {
-          console.warn("Müzik otomatik başlatılamadı:", err);
-        });
-      }
+    playMusic = function() {
+      if (isPlaying) return;
+      audio.play().then(() => {
+        toggleBtn.classList.add("is-playing");
+        toggleBtn.querySelector(".audio-toggle__text").textContent = "Müzik Çalıyor";
+        isPlaying = true;
+      }).catch((err) => {
+        // Tarayıcı henüz izin vermediyse sessizce bekle
+      });
+    };
+
+    function pauseMusic() {
+      audio.pause();
+      toggleBtn.classList.remove("is-playing");
+      toggleBtn.querySelector(".audio-toggle__text").textContent = "Müziği Aç";
+      isPlaying = false;
+    }
+
+    toggleBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (isPlaying) pauseMusic();
+      else playMusic();
     });
 
-    // Kullanıcının ilk etkileşiminde hafifçe başlatma isteği
-    const autoPlayOnTouch = () => {
-      if (!isPlaying) {
-        audio.play().then(() => {
-          toggleBtn.classList.add("is-playing");
-          toggleBtn.querySelector(".audio-toggle__text").textContent = "Müzik Çalıyor";
-          isPlaying = true;
-        }).catch(() => {});
-      }
-      window.removeEventListener("click", autoPlayOnTouch);
-      window.removeEventListener("touchstart", autoPlayOnTouch);
+    // 1. Sayfa açılır açılmaz çalmayı dene (Bazı tarayıcılarda serbesttir)
+    playMusic();
+
+    // 2. Mobilde ekrana yapılan İLK DOKUNUŞTA (kaydırma, dokunma, tıklama) müziği başlat
+    const unlockAudio = () => {
+      playMusic();
+      document.removeEventListener("pointerdown", unlockAudio);
+      document.removeEventListener("touchstart", unlockAudio);
+      document.removeEventListener("touchend", unlockAudio);
+      document.removeEventListener("click", unlockAudio);
     };
-    window.addEventListener("click", autoPlayOnTouch, { once: true });
-    window.addEventListener("touchstart", autoPlayOnTouch, { once: true });
+
+    document.addEventListener("pointerdown", unlockAudio, { passive: true });
+    document.addEventListener("touchstart", unlockAudio, { passive: true });
+    document.addEventListener("touchend", unlockAudio, { passive: true });
+    document.addEventListener("click", unlockAudio, { passive: true });
   }
 
   /* ==========================================================================
@@ -569,7 +580,8 @@
     const btnStart = document.getElementById("btnStartInvite");
     if (btnStart) {
       btnStart.addEventListener("click", () => {
-        // Yumuşak geçiş
+        // İlk butona tıklandığı an müziği kesin olarak başlat
+        if (typeof playMusic === "function") playMusic();
         goToScreen(2);
       });
     }
