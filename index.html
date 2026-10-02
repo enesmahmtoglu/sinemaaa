@@ -1,271 +1,416 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="robots" content="noindex, nofollow, noarchive">
-  <meta name="theme-color" content="#0C1015">
-  <title>Sinema Gecesi Davetiyesi 🍿🎬</title>
-  
-  <!-- Favicon: Retro Sinema Bileti & Projektör -->
-  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Crect%20width%3D%2216%22%20height%3D%2216%22%20rx%3D%223%22%20fill%3D%22%238B1E26%22%2F%3E%3Ccircle%20cx%3D%220%22%20cy%3D%228%22%20r%3D%222.5%22%20fill%3D%22%230C1015%22%2F%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%228%22%20r%3D%222.5%22%20fill%3D%22%230C1015%22%2F%3E%3Ctext%20x%3D%225%22%20y%3D%2211%22%20fill%3D%22%23D4AF37%22%20font-size%3D%227%22%20font-weight%3D%22bold%22%20font-family%3D%22monospace%22%3E%E2%98%85%3C%2Ftext%3E%3C%2Fsvg%3E">
-
-  <!-- Tipografi: Newsreader (Nostaljik Serif), IBM Plex Mono (Bilet/Baskı), Archivo (Modern Arayüz), Caveat (El Yazısı) -->
+  <meta name="theme-color" content="#07060d">
+  <title>İpek'e</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%239B2335'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23F6D98B'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Caveat:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..600&display=swap" rel="stylesheet">
-  
-  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Figtree:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css?v=202610030253">
 </head>
-<body>
+<body class="is-dark">
 
-  <!-- Atmosferik Projektör Işığı ve Toz Parçacıkları (Canvas) -->
-  <canvas id="projector-canvas" aria-hidden="true"></canvas>
-  <div class="theater-light-cone" aria-hidden="true"></div>
+<!-- Elle çizilmiş çizgilerin "kaynaması" için gürültü filtresi -->
+<svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="boil" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="1" result="n">
+        <animate attributeName="seed" values="1;5;9" dur="0.42s" calcMode="discrete" repeatCount="indefinite"/>
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.6"/>
+    </filter>
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="3" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="3"/>
+    </filter>
+    <symbol id="pumpkin" viewBox="0 0 60 50">
+      <path fill="#d9692a" d="M30 12c-6-3-14-3-20 2-8 6-9 20-3 28 5 7 15 8 23 6 8 2 18 1 23-6 6-8 5-22-3-28-6-5-14-5-20-2z"/>
+      <path fill="none" stroke="#a8461a" stroke-width="1.6" stroke-linecap="round" d="M30 13c-5 6-6 26 0 35M30 13c5 6 6 26 0 35M17 15c-6 8-6 24 0 31M43 15c6 8 6 24 0 31"/>
+      <path fill="none" stroke="#3d4a22" stroke-width="3" stroke-linecap="round" d="M29 13c0-5 1-8 4-10"/>
+      <path class="pk-face" fill="#ffd27a" d="M16 25l6-5 2 7zM44 25l-6-5-2 7zM15 33c6 7 24 7 30 0l-3 1-2 3-3-2-3 3-4-3-4 3-3-3-3 2-2-3z"/>
+    </symbol>
+  </defs>
+</svg>
 
-  <!-- Üst Bar: Müzik Butonu -->
-  <header class="cinema-header">
-    <div class="cinema-header__spacer"></div>
+<main id="app">
 
-    <button class="audio-toggle" id="audioToggle" type="button" aria-label="Arka plan müziğini aç/kapat">
-      <svg class="audio-toggle__icon" viewBox="0 0 24 24">
-        <!-- Film Makarası İkonu -->
-        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
-        <circle cx="12" cy="12" r="3" fill="currentColor"/>
-        <circle cx="12" cy="6" r="1.5" fill="currentColor"/>
-        <circle cx="12" cy="18" r="1.5" fill="currentColor"/>
-        <circle cx="6" cy="12" r="1.5" fill="currentColor"/>
-        <circle cx="18" cy="12" r="1.5" fill="currentColor"/>
-      </svg>
-      <span class="audio-toggle__text">Müzik</span>
-    </button>
-  </header>
+  <!-- ============ 00 · MÜHÜR ============ -->
+  <section class="scene" id="s-seal" aria-label="Mühürlü zarf">
+    <div class="seal-scene">
+      <p class="seal-note hand" id="sealKicker">bence sesi aç :p</p>
 
-  <!-- Ana Sahne (Ekranlar) -->
-  <main class="cinema-stage">
-
-    <!-- ==================== EKRAN 1: VİNTAGE SİNEMA BİLETİ ==================== -->
-    <section class="screen-panel active" id="screen-1" aria-label="Giriş Davetiyesi">
-      <article class="ticket-stub">
-        
-        <header class="ticket-header">
-          <div class="ticket-marquee">
-            <span class="ticket-subtitle">Özel Sinema Davetiyesi</span>
-            <h1 class="ticket-main-title">Film Kulübü</h1>
-          </div>
-          <div class="ticket-number">NO. 0827</div>
-        </header>
-
-        <div class="ticket-body">
-          <p class="ticket-quote">"Seninle harika bir sinema gecesi yapalım diyorum... Hazırsan her şey hazır!"</p>
-          <p class="ticket-desc">Bu bilet sana özel hazırlandı. Birlikte hangi gün ve hangi sürpriz filmi izleyeceğimizi belirlemek için bileti yırtarak başla.</p>
-
-          <div class="ticket-info-grid">
-            <div class="ticket-info-item">
-              <label>Mekan</label>
-              <span>Ev</span>
-            </div>
-            <div class="ticket-info-item">
-              <label>Koltuk</label>
-              <span>Çift Kişilik VIP</span>
-            </div>
-            <div class="ticket-info-item">
-              <label>Giriş</label>
-              <span>Tek Kişilik Davetiye</span>
-            </div>
-          </div>
-
-          <div class="ticket-divider"></div>
+      <div class="envelope" id="envelope">
+        <div class="env-back"></div>
+        <div class="env-letter"><span class="hand">bir davet</span></div>
+        <div class="env-front">
+          <span class="env-to hand">İpek'e</span>
         </div>
+        <div class="env-flap" id="envFlap"></div>
 
-        <footer class="ticket-footer">
-          <button class="btn-cinema" id="btnStartInvite" type="button">
-            <span>Bileti Aç & Keşfet</span>
-            <span aria-hidden="true">&rarr;</span>
-          </button>
-
-          <div class="ticket-barcode">
-            <div class="barcode-lines"></div>
-            <div class="barcode-digits">★ 27 08 2026 ADMIT ONE ★</div>
-          </div>
-        </footer>
-
-      </article>
-    </section>
-
-
-    <!-- ==================== EKRAN 2: GÜN SEÇİMİ ==================== -->
-    <section class="screen-panel" id="screen-2" aria-label="Gün Seçimi">
-      <div class="day-card">
-        <h2 class="screen-title">Hangi Gün Müsaitsin?</h2>
-        <p class="screen-desc">Sinema gecemiz için sana en uygun günü seç, biletimize mührünü basalım.</p>
-
-        <div class="day-options">
-          <button class="btn-day-stamp" id="btnDayToday" type="button">
-            <span class="day-name">Bugün</span>
-            <span class="day-sub">Akşam Seansı</span>
-            <div class="stamp-seal">ONAYLANDI</div>
-          </button>
-
-          <button class="btn-day-stamp" id="btnDayTomorrow" type="button">
-            <span class="day-name">Yarın</span>
-            <span class="day-sub">Akşam Seansı</span>
-            <div class="stamp-seal">ONAYLANDI</div>
-          </button>
-        </div>
-      </div>
-    </section>
-
-
-    <!-- ==================== EKRAN 3: 3 GİZEMLİ FİLM SEÇİMİ ==================== -->
-    <section class="screen-panel" id="screen-3" aria-label="Sürpriz Film Seçimi">
-      <div class="movies-card">
-        <h2 class="screen-title">3 Gizemli Film Kutusu</h2>
-        <p class="screen-desc">Seçimini yapmadan önce filmler gizli! Kutulardan birine dokun ve bu gece ne izleyeceğimizi keşfet.</p>
-
-        <div class="mystery-cards-grid">
-          
-          <!-- 1. Kutu: Köfte Yağmuru -->
-          <div class="mystery-box" data-film-id="1">
-            <div class="mystery-icon-frame">
-              <span class="mystery-icon">🎬</span>
-            </div>
-            <div class="mystery-info">
-              <span class="mystery-badge">Sürpriz Seçenek 01</span>
-              <h3 class="mystery-title">Gizemli Film #1</h3>
-              <p class="mystery-desc">Açmak için dokun...</p>
-              <span class="mystery-secret-tape">Mühürlü Kutu 🔒</span>
-            </div>
-          </div>
-
-          <!-- 2. Kutu: Wall-E -->
-          <div class="mystery-box" data-film-id="2">
-            <div class="mystery-icon-frame">
-              <span class="mystery-icon">🎬</span>
-            </div>
-            <div class="mystery-info">
-              <span class="mystery-badge">Sürpriz Seçenek 02</span>
-              <h3 class="mystery-title">Gizemli Film #2</h3>
-              <p class="mystery-desc">Açmak için dokun...</p>
-              <span class="mystery-secret-tape">Mühürlü Kutu 🔒</span>
-            </div>
-          </div>
-
-          <!-- 3. Kutu: Kung Fu Panda 1 -->
-          <div class="mystery-box" data-film-id="3">
-            <div class="mystery-icon-frame">
-              <span class="mystery-icon">🎬</span>
-            </div>
-            <div class="mystery-info">
-              <span class="mystery-badge">Sürpriz Seçenek 03</span>
-              <h3 class="mystery-title">Gizemli Film #3</h3>
-              <p class="mystery-desc">Açmak için dokun...</p>
-              <span class="mystery-secret-tape">Mühürlü Kutu 🔒</span>
-            </div>
-          </div>
-
-        </div>
-
-        <button class="btn-cinema" id="btnProceedGame" type="button">
-          <span>Filmi Onayla & Mini Oyuna Başla</span>
-          <span aria-hidden="true">&rarr;</span>
+        <button class="seal" id="seal" type="button" aria-label="Mührü kırmak için basılı tut">
+          <svg viewBox="0 0 140 140" aria-hidden="true">
+            <circle class="seal-ring" id="sealRing" cx="70" cy="70" r="64" pathLength="100"/>
+            <g class="seal-half seal-half--l" id="sealL">
+              <path class="wax" d="M70 18 C 52 16, 34 22, 26 38 C 18 52, 22 60, 18 72 C 14 86, 24 104, 40 112 C 52 120, 62 118, 70 122 Z"/>
+              <circle class="wax-in" cx="70" cy="70" r="34" clip-path="url(#clipL)"/>
+              <g class="emb">
+                <circle cx="58" cy="70" r="9"/>
+                <path d="M58 52v6M58 82v6M44 70h-6M46 58l4 4M46 82l4-4"/>
+              </g>
+            </g>
+            <g class="seal-half seal-half--r" id="sealR">
+              <path class="wax" d="M70 18 C 88 16, 106 24, 114 40 C 120 52, 118 62, 122 74 C 126 90, 114 106, 98 114 C 86 120, 78 118, 70 122 Z"/>
+              <circle class="wax-in" cx="70" cy="70" r="34" clip-path="url(#clipR)"/>
+              <g class="emb">
+                <path d="M74 62c4-6 18-6 20 8 1 10-8 14-14 14-4 0-6-2-6-4"/>
+                <path d="M80 70l3-3 3 3M86 77q-3 2-6 0"/>
+                <path d="M84 58q1-4 4-5"/>
+              </g>
+            </g>
+            <path class="seal-seam" d="M70 36 l-3 6 5 5 -4 6 4 5 -3 6 4 6 -4 5 3 6 -3 6 3 5"/>
+            <g class="seal-cracks" id="sealCracks">
+              <path pathLength="1" d="M70 34 L64 48 L72 58 L63 70 L73 82 L66 94 L70 108"/>
+              <path pathLength="1" d="M64 48 L50 44 M73 82 L88 88 M63 70 L46 76"/>
+            </g>
+            <defs>
+              <clipPath id="clipL"><rect x="0" y="0" width="70" height="140"/></clipPath>
+              <clipPath id="clipR"><rect x="70" y="0" width="70" height="140"/></clipPath>
+            </defs>
+          </svg>
         </button>
       </div>
-    </section>
 
+      <p class="hint hand" id="sealHint">mührü basılı tut</p>
+    </div>
+  </section>
 
-    <!-- ==================== EKRAN 4: PİKSEL MİNİ OYUN ==================== -->
-    <section class="screen-panel" id="screen-4" aria-label="Piksel Mini Oyun">
-      <div class="game-cabinet">
-        <header class="cabinet-marquee">
-          <div class="cabinet-title-wrap">
-            <span class="cabinet-sub">ÖZEL PİKSEL MİNİ OYUN &middot; <span id="cgHeroName">Karakter</span></span>
-            <span class="cabinet-title" id="cgCabinetTitle">PİXEL ARCADE</span>
-          </div>
-          <div class="cabinet-score-badge">
-            Skor: <strong id="cgScoreVal">0</strong> / 10
-          </div>
-        </header>
+  <!-- ============ 01 · KIVILCIM ============ -->
+  <section class="scene" id="s-spark" aria-label="Kıvılcım">
+    <div class="spark-copy">
+      <p class="write hand" id="sparkL1"></p>
+      <p class="write hand write--big" id="sparkL2"></p>
+      <p class="write hand write--soft" id="sparkL3"></p>
+    </div>
+    <div class="soul-ring" id="soulRing" aria-hidden="true">
+      <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50"/><circle cx="60" cy="60" r="38" class="inner"/></svg>
+    </div>
+    <p class="hint hand" id="sparkHint">kıvılcımı parmağınla halkaya götür</p>
+  </section>
 
-        <div class="game-viewport">
-          <canvas id="cinemaGameCanvas" width="320" height="240"></canvas>
+  <!-- ============ 02 · KİŞİLİK SALONU ============ -->
+  <section class="scene scene--light" id="s-hall" aria-label="Kişilik Salonu">
+    <div class="hall-bg" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="hall-photos" aria-hidden="true">
+      <figure class="polaroid hp hp1"><img src="assets/img/anilar/tebesir.jpg" alt=""></figure>
+      <figure class="polaroid hp hp2"><img src="assets/img/anilar/tavsanlar.jpg" alt=""></figure>
+      <figure class="polaroid hp hp3"><img src="assets/img/anilar/origami.jpg" alt=""></figure>
+      <figure class="polaroid hp hp4"><img src="assets/img/anilar/kedi.jpg" alt=""></figure>
+      <figure class="polaroid hp hp5"><img src="assets/img/anilar/park.jpg" alt=""></figure>
+    </div>
+    <div class="col hall-col">
+      <div class="badges" id="badges">
+        <button class="badge" type="button" data-i="0" data-sub="biraz yasadışı olabilir belki">
+          <span class="badge-disc"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="9" y="33" width="30" height="10" rx="3" transform="rotate(-30 24 38)"/><path d="M45 12l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/><path d="M12 54q8-6 16 0t16 0"/></svg></span>
+          <span class="badge-label hand">Kaldırım sanatçısı</span>
+        </button>
+        <button class="badge" type="button" data-i="1" data-sub="ve ikisi de çok tatlıdır bence">
+          <span class="badge-disc"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M16 27L18 12l10 8q4-1 8 0l10-8 2 15q4 14-16 23-20-9-16-23z"/><path d="M23 31q3-3 6 0M35 31q3-3 6 0"/><path d="M31 37l1 1.5 1-1.5M32 38.5q-2 3-5 2M32 38.5q2 3 5 2"/><path d="M11 36l10 1M11 42l10-2M53 36l-10 1M53 42l-10-2"/></svg></span>
+          <span class="badge-label hand">Sokak kedilerinin gizli hayranı</span>
+        </button>
+        <button class="badge" type="button" data-i="2" data-sub="en iyi origami konusunda hâlâ bir numara">
+          <span class="badge-disc"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 12l18 18-18 10-18-10z"/><path d="M14 30L8 45l16-6M50 30l6 15-16-6M32 40v12M26 51l6-11 6 11"/><circle cx="28" cy="23" r="1.6"/><circle cx="36" cy="23" r="1.6"/></svg></span>
+          <span class="badge-label hand">Kâğıttan kurbağa terbiyecisi</span>
+        </button>
+        <button class="badge" type="button" data-i="3" data-sub="sadece onların işsiz kalmasını istemiyoo">
+          <span class="badge-disc"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M33 31L49 15"/><path d="M49 15l2-6 6 2-2 6z"/><path d="M52 10l2-2M56 14l2-2"/><path d="M33 31c-2-5-8-6-10-2-1 3-4 3-6 2-5-1-9 3-8 9 1 5 5 7 7 11 3 5 10 6 13 2 2-3 1-6 4-8 4-2 8-3 6-8-1-3-4-4-6-6z"/><path d="M19 38l7 7M22 35l7 7"/><circle cx="15" cy="47" r="1.6"/><circle cx="19" cy="51" r="1.6"/></svg></span>
+          <span class="badge-label hand">The Strokes'un 6. üyesi</span>
+        </button>
+        <button class="badge" type="button" data-i="4" data-sub="yeni başladığı hâlde hemen viraj atan bir de">
+          <span class="badge-disc"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M20 10h13v17c0 4 5 6 11 8 6 2 9 4 9 9v5H20z"/><path d="M24 16h6M24 21h6M24 26h7"/><path d="M14 57h38c4 0 7-2 7-5"/><path d="M24 49v8M46 49v8"/><path d="M6 44q4-3 8 0M4 36q4-3 8 0" opacity=".6"/></svg></span>
+          <span class="badge-label hand">Patende viraj atan</span>
+        </button>
+      </div>
+
+      <p class="badge-sub hand" id="badgeSub" aria-live="polite">&nbsp;</p>
+
+      <div class="hall-final" id="hallFinal">
+        <p class="write hand" id="hallW1"></p>
+        <p class="hall-big" id="hallBig">bir film gecesi.</p>
+      </div>
+    </div>
+
+    <div class="pass-stage" id="passStage">
+      <div class="pass" id="pass">
+        <div class="pass-face pass-front">
+          <div class="pass-top"><span></span><span>No. 143</span></div>
+          <p class="pass-name">İpek</p>
+          <p class="pass-line">Özellikler: <b>5 / 5</b> · Kıvılcım: <b>bulundu</b></p>
+          <p class="pass-line">Başlangıç: <b>bir film gecesi</b></p>
+          <div class="pass-stamp" aria-hidden="true">onaylandı</div>
+          <button class="btn-hand" id="passFlip" type="button">bileti çevir
+            <svg viewBox="0 0 60 24" aria-hidden="true"><path d="M2 14c14-10 34-10 50-2m0 0l-8-6m8 6l-9 4"/></svg>
+          </button>
         </div>
-
-        <div class="game-progress-bar">
-          <div class="game-progress-fill" id="cgScoreFill"></div>
-        </div>
-
-        <div class="game-controls-bar">
-          <span class="game-hint desktop-hint">&larr; &rarr; Tuşları veya Fare ile hareket ettir</span>
-          <span class="game-hint mobile-hint">Ekranı parmağınla kaydır</span>
-          
-          <div class="mobile-dpad">
-            <button class="btn-dpad" id="cgBtnLeft" type="button">&larr; Sol</button>
-            <button class="btn-dpad" id="cgBtnRight" type="button">Sağ &rarr;</button>
-          </div>
+        <div class="pass-face pass-back">
+          <p class="pass-q">Ne zaman?</p>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
+  <!-- ============ 03 · GÜN ============ -->
+  <section class="scene" id="s-day" aria-label="Gün seçimi">
+    <div class="sky" id="sky" aria-hidden="true">
+      <div class="sky-l sky-day"></div>
+      <div class="sky-l sky-dusk"></div>
+      <div class="sky-l sky-night"></div>
+      <div class="sky-l sky-dawn"></div>
+      <div class="stars" id="dayStars"></div>
+      <div class="sun" id="sun"></div>
+      <div class="moon-s" id="moonS"></div>
+      <svg class="skyline" id="skyline" preserveAspectRatio="none"></svg>
+      <div class="city-ground"></div>
+    </div>
 
-    <!-- ==================== EKRAN 5: SON EKRAN ==================== -->
-    <section class="screen-panel" id="screen-5" aria-label="Kapanış ve Hatıra">
-      <div class="final-wrap">
-        <article class="final-card">
-          <div class="final-ticket-top">
-            <span class="final-ticket-label">Hatıra Sinema Bileti</span>
-            <span class="final-ticket-status">&#10003; REZERVASYON ALINDI</span>
-          </div>
+    <div class="col day-col">
+      <header class="head">
+        <h1 class="title">Ne <em>zaman</em>?</h1>
+        <p class="sub hand" id="dayCaption">Bir tuşa bas, gökyüzü göstersin.</p>
+      </header>
+    </div>
 
-          <div class="final-content">
-            <h2 class="final-big-message">O zaman hazırsan senden mesajını bekliyorum.</h2>
+    <div class="piano" id="keys">
+      <div class="fallboard" aria-hidden="true"></div>
+      <div class="keybed" id="keybed"></div>
+      <div class="key-rail" aria-hidden="true"></div>
+    </div>
+  </section>
 
-            <div class="final-summary-box">
-              <div class="final-summary-row">
-                <span>Belirlenen Gün</span>
-                <span id="finalSelectedDay">Bugün</span>
-              </div>
-              <div class="final-summary-row">
-                <span>Seçilen Film</span>
-                <span id="finalSelectedMovie">Köfte Yağmuru</span>
-              </div>
-              <div class="final-summary-row">
-                <span>Oyun Başarısı</span>
-                <span id="finalScoreAchieved">10 / 10 (Kazanıldı!)</span>
-              </div>
-              <div class="final-summary-row">
-                <span>Koltuk Durumu</span>
-                <span>En Güzel Yer (Çift Kişilik) 🍿</span>
-              </div>
-            </div>
+  <!-- ============ 04 · GEÇİT ============ -->
+  <section class="scene" id="s-gate" aria-label="Geçit">
+    <div class="gate-half gate-half--l" id="gateL"></div>
+    <div class="gate-half gate-half--r" id="gateR"></div>
+    <svg class="gate-stitches" id="gateStitches" aria-hidden="true"></svg>
+  </section>
 
-            <p class="final-handwritten-note">"Harika bir akşam olacak... Enes"</p>
+  <!-- ============ 05 · AĞAÇ KAPILARI ============ -->
+  <section class="scene scene--night" id="s-forest" aria-label="Kapı seçimi">
+    <div class="forest" id="forest">
+      <div class="stars stars--forest" id="forestStars" aria-hidden="true"></div>
+      <button class="moon" id="moon" type="button" aria-label="Ay"></button>
 
-            <div class="final-actions">
-              <button class="btn-cinema" id="btnShareWhatsApp" type="button">
-                <span>WhatsApp'tan Haber Ver 💬</span>
-              </button>
-              <button class="btn-secondary" id="btnReplayAll" type="button">
-                <span>Seçimleri Sıfırla & Başa Dön</span>
-              </button>
-            </div>
-          </div>
-        </article>
+      <div class="clouds" aria-hidden="true">
+        <svg class="cloud c1" viewBox="0 0 300 60"><path d="M10 44c20-16 40-4 56-14 18-12 40-18 62-6 14 8 26 2 40-6 22-12 50-6 66 8 14 12 34 10 56 6-30 14-80 16-130 14S40 50 10 44z"/></svg>
+        <svg class="cloud c2" viewBox="0 0 300 60"><path d="M6 40c26-12 52-2 70-10 20-10 44-14 66-2 16 8 32 4 48-2 24-10 52-2 70 10 12 8 22 8 34 6-40 14-96 12-150 12S30 46 6 40z"/></svg>
       </div>
-    </section>
 
-  </main>
+      <div class="bats" aria-hidden="true">
+        <svg class="bat b1" viewBox="0 0 40 20"><path d="M20 8c-2-2-4-2-5 0-3-4-8-6-14-4 4 2 6 6 5 10 3-2 6-2 8 1 1-3 3-4 6-3 3-1 5 0 6 3 2-3 5-3 8-1-1-4 1-8 5-10-6-2-11 0-14 4-1-2-3-2-5 0z"/></svg>
+        <svg class="bat b2" viewBox="0 0 40 20"><path d="M20 8c-2-2-4-2-5 0-3-4-8-6-14-4 4 2 6 6 5 10 3-2 6-2 8 1 1-3 3-4 6-3 3-1 5 0 6 3 2-3 5-3 8-1-1-4 1-8 5-10-6-2-11 0-14 4-1-2-3-2-5 0z"/></svg>
+        <svg class="bat b3" viewBox="0 0 40 20"><path d="M20 8c-2-2-4-2-5 0-3-4-8-6-14-4 4 2 6 6 5 10 3-2 6-2 8 1 1-3 3-4 6-3 3-1 5 0 6 3 2-3 5-3 8-1-1-4 1-8 5-10-6-2-11 0-14 4-1-2-3-2-5 0z"/></svg>
+      </div>
 
-  <!-- Arka Plan Müziği -->
-  <audio id="track-audio" loop preload="auto" playsinline webkit-playsinline src="assets/audio/muzik.mp3"></audio>
+      <svg class="layer l-far" data-depth="5" viewBox="0 0 400 300" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+        <path class="fill-far" d="M-600 300V240H0c80-4 150-20 200-90 15-22 22-42 24-58h12c4 38 34 118 164 144h600v64z"/>
+        <path class="curl" d="M230 96c2-36-16-56-38-52-22 4-24 32-6 36 14 3 20-12 10-18"/>
+        <g class="figures" id="figures">
+          <path d="M224 92v-26m0 0c-3 0-5-3-5-7s2-7 5-7 5 3 5 7-2 7-5 7zm-8 12l8-4 8 4M224 92l-4 10m4-10l4 10"/>
+          <path d="M240 92v-22m0 0c-3 0-5-3-5-6s2-6 5-6 5 3 5 6-2 6-5 6zm-5-8c-3 4-2 12-1 16m11-16c3 4 2 12 1 16m-6 30l-5 10m5-10l5 10m-10-18h10l2 18h-14z"/>
+        </g>
+      </svg>
 
-  <!-- Firebase SDK (file:// protokolü ve tarayıcılarla %100 uyumlu CDN) -->
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+      <svg class="layer l-town" id="town" data-depth="10" preserveAspectRatio="none" aria-hidden="true"></svg>
 
-  <!-- Komut Dosyaları -->
-  <script src="js/firebase-config.js"></script>
-  <script src="js/cinema-game.js"></script>
-  <script src="js/main.js"></script>
+      <svg class="layer l-mid" data-depth="14" viewBox="0 0 400 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+        <g class="tree-line">
+          <path d="M40 300c-2-50 10-90 2-130-6-30 4-50 18-70M44 200c-24-10-34-30-28-44 4-10 16-6 12 2M50 150c26-10 40-30 34-46-4-10-16-6-12 2M60 100c4-20-2-34-14-36-10-2-12 10-4 12"/>
+          <path d="M360 300c2-40-8-80 0-120 6-26-2-46-16-62M356 210c22-8 32-26 26-40-4-8-14-4-10 4M350 160c-22-8-34-24-28-40 4-8 14-4 10 4M344 118c-2-18 6-30 18-30 8 0 10 10 2 12"/>
+        </g>
+      </svg>
+
+      <div class="fog" aria-hidden="true"><i></i><i></i><i></i></div>
+
+      <div class="layer l-front doors" data-depth="20">
+        <div class="door-tree" data-i="0">
+          <svg viewBox="0 0 200 340" aria-hidden="true">
+            <path class="trunk" d="M30 340c18-40 24-90 32-140 6-40 2-80 18-120h40c14 40 12 80 18 120 8 50 14 100 32 140z"/>
+            <path class="branch" d="M82 84c-10-30-34-40-50-30-12 8-6 24 6 20 8-3 6-12 0-12M118 84c8-26 30-40 48-30 12 7 6 22-6 20-8-1-8-10-2-12M100 80c0-24 8-44 22-56 10-8 22 0 14 10"/>
+          </svg>
+          <button class="door" type="button" aria-label="Birinci kapı">
+            <span class="door-light"></span>
+            <span class="door-leaf">
+              <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 6l3.5 9.5L33 16l-7.5 6 2.6 9.6L20 26l-8.1 5.6 2.6-9.6L7 16l9.5-.5z"/></svg>
+            </span>
+          </button>
+          <span class="sign hand">1. kapı</span>
+        </div>
+        <div class="door-tree" data-i="1">
+          <svg viewBox="0 0 200 340" aria-hidden="true">
+            <path class="trunk" d="M26 340c22-36 28-96 36-150 4-36 0-76 14-110h44c12 34 14 76 20 112 8 52 16 112 34 148z"/>
+            <path class="branch" d="M80 84c-16-24-40-28-52-16-10 10 0 24 10 18 6-4 2-12-4-10M120 84c14-30 38-38 50-26 9 10-1 22-10 16-6-4-2-11 4-10M98 80c-6-26-2-48 12-58 10-6 18 4 10 12"/>
+          </svg>
+          <button class="door" type="button" aria-label="İkinci kapı">
+            <span class="door-light"></span>
+            <span class="door-leaf">
+              <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M25 7a13 13 0 1 0 8 22A11 11 0 0 1 25 7z"/><path d="M30 10l1 2 2 .5-2 .8-.6 2-1-2-2-.6 2-.7z"/></svg>
+            </span>
+          </button>
+          <span class="sign hand">2. kapı</span>
+        </div>
+
+        <svg class="pumpkin pk1" viewBox="0 0 60 50" aria-hidden="true"><use href="#pumpkin"/></svg>
+        <svg class="pumpkin pk2" viewBox="0 0 60 50" aria-hidden="true"><use href="#pumpkin"/></svg>
+        <svg class="pumpkin pk3" viewBox="0 0 60 50" aria-hidden="true"><use href="#pumpkin"/></svg>
+        <svg class="stone st1" viewBox="0 0 40 50" aria-hidden="true"><path d="M4 50V18C4 4 36 4 36 18v32z"/><path class="rip" d="M13 22h14M20 16v18"/></svg>
+        <svg class="stone st2" viewBox="0 0 40 50" aria-hidden="true"><path d="M6 50V14l14-10 14 10v36z"/><path class="rip" d="M14 24h12"/></svg>
+      </div>
+
+      <svg class="ground" viewBox="0 0 400 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 60V22c70-10 140-14 200-8s130 4 200-6v52z"/></svg>
+    </div>
+
+    <div class="col forest-col">
+      <header class="head">
+        <h1 class="title">Hangi kapıdan <em>girelim</em>?</h1>
+        <p class="sub hand" id="forestSub">Arkalarında ne olduğunu ben de söylemeyeceğim.</p>
+      </header>
+    </div>
+  </section>
+
+  <!-- ============ 05½ · AÇILIŞ: kapının ardında ne var ============ -->
+  <section class="scene" id="s-reveal" aria-label="Kapının ardında">
+    <div class="reveal">
+      <p class="reveal-k hand" id="revealK">kapının ardında…</p>
+      <p class="reveal-t" id="revealT"></p>
+      <p class="reveal-s" id="revealS"></p>
+    </div>
+  </section>
+
+  <!-- ============ 06a · OYUN: SOUL ============ -->
+  <section class="scene game" id="s-gsoul" aria-label="Half Note Kulübü">
+    <canvas class="gcv" id="soulCv" aria-hidden="true"></canvas>
+    <div class="hud" id="soulHud">
+      <div class="hud-box"><span class="hud-k">kombo</span><b id="soulCombo">0</b></div>
+      <div class="meter" aria-hidden="true"><i id="soulMeter"></i><span class="meter-goal"></span></div>
+      <div class="hud-box hud-box--r"><span class="hud-k">uyum</span><b id="soulPct">0%</b></div>
+    </div>
+    <div class="g-card g-card--soul" id="soulCard">
+      <p class="kicker">Soul · Half Note Kulübü</p>
+      <h2 class="g-title">Bu gece <em>sahne</em> senin</h2>
+      <p class="g-text">Küçük ruhlar notaya dönüşüp dört sütundan aşağı süzülüyor. Halkaya vardıkları an kendi sütunlarına dokun.</p>
+      <p class="g-goal hand">hedef: ruhların en az %70'ini yakala</p>
+      <button class="g-btn" id="soulStart" type="button">çalmaya başla</button>
+    </div>
+  </section>
+
+  <section class="scene game" id="s-gnight" aria-label="Noel gecesi uçuşu">
+    <canvas class="gcv" id="nightCv" aria-hidden="true"></canvas>
+    <div class="hud" id="nightHud">
+      <div class="hud-box"><span class="hud-k">hediye</span><b id="nightGifts">0 / 12</b></div>
+      <div class="lives" id="nightLives" aria-label="Canlar">
+        <svg viewBox="0 0 60 50"><use href="#pumpkin"/></svg><svg viewBox="0 0 60 50"><use href="#pumpkin"/></svg><svg viewBox="0 0 60 50"><use href="#pumpkin"/></svg>
+      </div>
+    </div>
+    <p class="g-toast hand" id="nightToast" aria-live="polite"></p>
+    <div class="g-card g-card--night" id="nightCard">
+      <p class="kicker">Nightmare · Noel gecesi uçuşu</p>
+      <h2 class="g-title">Kızağı <em>uçur</em></h2>
+      <p class="g-text">Parmağını yukarı aşağı kaydırarak kızağı yönet. Hediyeleri topla; kasabalının havai fişeklerinden ve yarasalardan kaç.</p>
+      <p class="g-goal hand">hedef: 12 hediye · 3 can</p>
+      <button class="g-btn" id="nightStart" type="button">kalkış!</button>
+    </div>
+  </section>
+
+  <!-- ============ 07 · BİLET ============ -->
+  <section class="scene scene--ink" id="s-ticket" aria-label="Bilet">
+    <div class="col ticket-col">
+      <p class="sub hand ticket-hint" id="ticketHint">Koçanı aşağı çekip yırt. Yırtmak = evet.</p>
+      <div class="ticket" id="ticket">
+        <div class="t-main">
+          <div class="t-top"><span>Dünya Bileti</span><span>Tek gece</span></div>
+          <p class="t-film" id="tFilm">Soul</p>
+          <dl class="t-rows">
+            <div><dt>Seans</dt><dd id="tDay">Bu akşam</dd></div>
+            <div><dt>Salon</dt><dd>İki ev, tek ekran</dd></div>
+            <div><dt>Seyirci</dt><dd>İpek <span class="muted">(+ Enes)</span></dd></div>
+          </dl>
+          <div class="t-stamp" id="tStamp" aria-hidden="true">giriş onaylandı</div>
+        </div>
+        <div class="t-perf" aria-hidden="true"></div>
+        <div class="t-stub" id="tStub" tabindex="0" role="button" aria-label="Koçanı yırt">
+          <span class="t-stub-k">koçan</span>
+          <span class="t-stub-no">No. 0310</span>
+          <span class="t-stub-h hand">çek ve yırt ↓</span>
+        </div>
+      </div>
+      <button class="btn-plain" id="tearBtn" type="button">bileti yırt</button>
+    </div>
+  </section>
+
+  <!-- ============ 08 · JENERİK ============ -->
+  <section class="scene scene--ink" id="s-credits" aria-label="Jenerik">
+    <div class="stars stars--credits" id="creditStars" aria-hidden="true"></div>
+    <button class="moon moon--small" id="moon2" type="button" aria-label="Ay"></button>
+    <div class="credits-mask">
+      <div class="credits" id="credits">
+        <p class="c-pre">bir film gecesi daveti</p>
+        <div class="c-block"><span>Yönetmen</span><b>Enes</b></div>
+        <div class="c-block"><span>Başrol</span><b class="gold">İpek</b></div>
+        <div class="c-block"><span>Konuk oyuncular</span><b>Sokak kedileri</b><b>İki tavşan anahtarlık</b><b>Origami kurbağa</b></div>
+        <div class="c-block"><span>Kaldırım çizimleri</span><b>İpek</b></div>
+        <div class="c-block"><span>Müzik</span><b>One More Time</b></div>
+        <div class="c-block"><span>Gösterimde</span><b id="cFilm">Soul</b></div>
+        <div class="c-block"><span>Seans</span><b id="cDay">Bu akşam</b></div>
+        <div class="c-block"><span>Mekân</span><b>İki ev, tek ekran</b></div>
+        <div class="c-block"><span>Özel teşekkür</span><b>Google Haritalar</b><i>(hiç kullanılmadı)</i></div>
+      </div>
+    </div>
+    <div class="the-end" id="theEnd">
+      <p class="end-big">Biletin cebinde.</p>
+      <p class="end-hand hand"></p>
+      <a class="btn-wa" id="waShare" href="https://api.whatsapp.com/send" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.4 19z"/><path d="M9 8.5c0 3 2.5 6 5.5 6.5l1.3-1.3-2-1-1 .8c-1-.5-2-1.5-2.4-2.5l.8-1-1-2z"/></svg>
+        WhatsApp'tan haber ver
+      </a>
+      <button class="btn-plain" id="replay" type="button">baştan izle</button>
+    </div>
+  </section>
+
+</main>
+
+<!-- Gizli not: aya üç kez dokununca -->
+<div class="secret" id="secret" hidden>
+  <div class="secret-card" role="dialog" aria-modal="true" aria-labelledby="secretTitle">
+    <p class="kicker" id="secretTitle">gizli not</p>
+    <p class="secret-text hand">Siteyi Google Haritalar'a bakmadan yaptım</p>
+    <svg class="secret-face" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26"/><path d="M20 26q4-5 8 0"/><path d="M40 22l6 6m0-6l-6 6"/><path d="M20 38q12 8 24 0"/><path d="M30 42v6q0 6 6 6t6-6v-8"/></svg>
+    <button class="btn-plain" id="secretClose" type="button">tamam, kapat</button>
+  </div>
+</div>
+
+
+<canvas id="fx" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+<svg class="progress" id="progress" viewBox="0 0 180 12" aria-hidden="true"></svg>
+
+<button class="mute" id="mute" type="button" aria-label="Müziği kapat" aria-pressed="false">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path class="on" d="M9 18V6l10-2v12"/><circle class="on" cx="6.5" cy="18" r="2.5"/><circle class="on" cx="16.5" cy="16" r="2.5"/><path class="off" d="M4 4l16 16"/></svg>
+</button>
+
+<div class="rotate" aria-hidden="true"><p class="hand">telefonu dik tut, daha güzel</p></div>
+
+<audio id="music" preload="auto" playsinline src="assets/audio/muzik.mp3"></audio>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js?v=202610030253"></script>
+<script src="js/audio.js?v=202610030253"></script>
+<script src="js/fx.js?v=202610030253"></script>
+<script src="js/games.js?v=202610030253"></script>
+<script src="js/app.js?v=202610030253"></script>
 </body>
 </html>

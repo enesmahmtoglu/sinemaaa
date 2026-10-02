@@ -132,7 +132,7 @@ window.CinemaDB = {
   isReady: () => isFirebaseReady,
   // Manuel test için yardımcı fonksiyon: Konsola window.CinemaDB.testSend() yazarak da test edilebilir!
   testSend: async () => {
-    return await saveCinemaRSVP({ day: "Bugün (Test)", movie: "Köfte Yağmuru (Test)" });
+    return await saveCinemaRSVP({ day: "Bugün (Test)", movie: "Soul (Test)" });
   }
 };
 

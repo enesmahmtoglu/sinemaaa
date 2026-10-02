@@ -1,70 +1,42 @@
-# 🍿 Sinema Gecesi Davetiyesi
+# İki Dünya Arasında Bir Davet
 
-Özel bir sinema gecesi için hazırlanmış, zanaat odaklı ve retro estetiğe sahip etkileşimli bir web davetiyesi.
+İpek için hazırlanmış, *Soul* (2020) ve *The Nightmare Before Christmas* temalı etkileşimli film gecesi davetiyesi.
 
-Saf HTML, modern CSS ve modüler JavaScript. Build/derleme adımı yok, bağımlılık yok, çerçeve karmaşası yok. Doğrudan tarayıcıda çalışır.
+Saf HTML, CSS ve JavaScript ile yazıldı. Derleme adımı ya da paket bağımlılığı yok. Telefonda, dikey ekranda açılmak üzere tasarlandı.
 
----
+## Akış
 
-## 🎬 Akış ve Deneyim
+| # | Sahne | Ne oluyor |
+|---|---|---|
+| 0 | **Mühür** | Zarfın mührü basılı tutulunca ısınıp çatlar; şarkı o an başlar. |
+| 1 | **Kıvılcım** | Parmağı takip eden bir ışık. İsim kendiliğinden yazılır, kıvılcım halkaya götürülür. |
+| 2 | **Kişilik Salonu** | Beş rozet dolar, "Dünya Bileti" mühürlenir ve çevrilir. |
+| 3 | **Gün** | İki piyano tuşu: Bugün / Yarın. Her tuş gökyüzünü o akşama götürür. |
+| 4 | **Geçit** | Gökyüzü bir dikiş hattından yırtılır, altından Halloween Town çıkar. Şarkı bir an boğuklaşır. |
+| 5 | **Ağaç kapıları** | Film seçimi. İlk dokunuş kapıyı çalar, ikincisi açar. |
+| 6 | **Mini oyun** | Soul: düşen tohumları yakala. Nightmare: Zero'nun burnuyla sisin altındakileri bul. Ödül: anı fotoğrafları. |
+| 7 | **Bilet** | Koçan aşağı çekilip yırtılır; seçim Firebase'e kaydedilir. |
+| 8 | **Jenerik** | Film jeneriği ve kapanış. |
 
-1. **Giriş Bileti:** Yırtılabilir kuponlu, vintage sinema kulübü giriş bileti ve "Bileti Aç & Keşfet" butonu.
-2. **Gün Seçimi:** "Bugün" ve "Yarın" seçenekleri için fiziksel ıstampa mührü basma animasyonu.
-3. **3 Gizemli Film Kutusu:**
-   - 1. Seçenek: **Köfte Yağmuru** (Cloudy with a Chance of Meatballs)
-   - 2. Seçenek: **Wall-E**
-   - 3. Seçenek: **Kung Fu Panda 1**
-   - Seçilen gün ve film otomatik olarak veritabanına kaydedilir.
-4. **Retro Piksel Mini Oyun:**
-   - Seçilen filme göre dinamik değişen el yapımı piksel karakterler:
-     - Köfte Yağmuru &rarr; **Flint Lockwood** havadan yağan köfte, burger ve spagettileri yakalar.
-     - Wall-E &rarr; **Wall-E** bot içindeki filizi, pilleri ve kasetleri toplar.
-     - Kung Fu Panda &rarr; **Panda Po** buharlı mantıları, erişteleri ve şeftalileri kapar.
-   - 10 puan toplandığında zafer konfetisi ve ses efekti eşliğinde otomatik son ekrana geçiş.
-5. **Kapanış ve Hatıra Ekranı:**
-   - Belirlenen gün ve filmin yazılı olduğu onaylanmış hatıra bileti.
-   - *"O zaman hazırsan senden mesajını bekliyorum."* kapanış mesajı.
-   - WhatsApp'tan tek tıkla mesaj gönderme ve tekrar oynama butonları.
+Gizli: aya üç kez dokununca bir not açılır.
 
----
+## Dosyalar
 
-## 🚀 Başlatmak İçin
+- `index.html`: tüm sahnelerin iskeleti ve çizimler (SVG)
+- `css/app.css`: iki dünyanın görsel dili
+- `js/audio.js`: şarkı, ritim takibi, geçitteki filtre, sentezlenmiş efekt sesleri
+- `js/fx.js`: parçacık katmanı, kıvılcım, elle yazılma efekti
+- `js/games.js`: iki mini oyun ve fotoğraflar
+- `js/app.js`: sahne akışı ve geçişler
+- `js/firebase-config.js`: Firestore kaydı (`cinema_invites` koleksiyonu)
 
-`index.html` dosyasını herhangi bir web tarayıcısında açmanız yeterlidir.
+## Yerelde çalıştırma
 
----
+Ritim analizi ve ses filtresi `file://` üzerinden çalışmaz; bir yerel sunucu kullanın:
 
-## 💾 Firebase Kurulumu (İsteğe Bağlı)
-
-Projede varsayılan olarak **Cloud Firestore** entegrasyonu hazır bulunmaktadır.
-Kendi Firebase projenizi bağlamak için:
-
-1. [Firebase Console](https://console.firebase.google.com/) adresine gidin.
-2. Projenizin **Project Settings** sayfasındaki web yapılandırma anahtarlarını kopyalayın.
-3. `js/firebase-config.js` dosyasındaki `firebaseConfig` alanına yapıştırın:
-
-```javascript
-const firebaseConfig = {
-  apiKey: "AIzaSy...",
-  authDomain: "projeniz.firebaseapp.com",
-  projectId: "projeniz",
-  storageBucket: "projeniz.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:..."
-};
+```bash
+python -m http.server 5173
 ```
 
-> **NOT:** Firebase anahtarları girilmemiş olsa bile site hiçbir zaman hata vermez. Otomatik olarak güvenli `localStorage` yerel depolama modunda çalışır ve seçimleri tarayıcıda saklar.
-
----
-
-## 📁 Dosya Yapısı
-
-```
-index.html              Tüm sahne yapıları ve anlamsal bilet öğeleri
-css/style.css           Kadife sinema salonu, bilet perforasyonu ve damga animasyonları
-js/firebase-config.js   Firestore bağlantısı ve çevrimdışı yedekleme katmanı
-js/cinema-game.js       Flint, Wall-E ve Po karakterleri için Canvas piksel oyun motoru
-js/main.js              Sahne yöneticisi, atmosferik projektör ışığı ve müzik kontrolleri
-assets/audio/muzik.mp3  Nostaljik arka plan müziği
-```
+Belirli bir sahneden başlamak için (bu modda Firebase'e kayıt yapılmaz):
+`http://localhost:5173/?sahne=forest`, `?sahne=game&film=nightmare`, `?sahne=ticket`…
