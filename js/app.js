@@ -3,6 +3,9 @@
  * Her sahne bir async fonksiyon; bir sonrakine kendi geçişini yaparak devreder.
  */
 const STORE_KEY = "ipek_davet_v2";
+// İlk girişte iki kapının arkasında da Soul var; film bir kez açılınca bu not düşülür
+// ve sonraki girişlerde kapılar normale döner (biri Soul, biri Nightmare, rastgele).
+const FIRST_DOOR_KEY = "ipek_ilk_kapi_goruldu";
 const FILMS = {
   soul: { name: "Soul", pass: "Dünya Bileti", title: "Soul", meta: "Pixar · 2020" },
   nightmare: { name: "The Nightmare Before Christmas", pass: "Halloween Town Bileti", title: "The <em>Nightmare</em> Before Christmas", meta: "Henry Selick · 1993" },
@@ -184,7 +187,7 @@ async function sceneSeal(returning) {
   FX.spark.ty = innerHeight * 0.5;
   anim($("#envelope"), [{ transform: "scale(1)", opacity: 1 }, { transform: "scale(4.5)", opacity: 0 }], { duration: 1150, easing: "cubic-bezier(.7,0,.3,1)" });
   await wait(700);
-  const next = show(returning ? "credits" : "spark");
+  const next = show("spark");
   await anim(next, [{ opacity: 0 }, { opacity: 1 }], { duration: 700, fill: "none" });
   hide("seal");
   document.body.classList.remove("at-seal");
@@ -749,7 +752,9 @@ async function sceneForest() {
   });
 
   // hangi filmin hangi kapının arkasında olduğu her seferinde rastgele
-  const order = Math.random() < 0.5 ? ["soul", "nightmare"] : ["nightmare", "soul"];
+  let firstDoors = true;
+  try { firstDoors = !localStorage.getItem(FIRST_DOOR_KEY); } catch (e) {}
+  const order = firstDoors ? ["soul", "soul"] : Math.random() < 0.5 ? ["soul", "nightmare"] : ["nightmare", "soul"];
   const doors = $$(".door");
   doors.forEach((d, i) => (d.dataset.film = order[i]));
   const film = await new Promise((resolve) => {
@@ -780,6 +785,9 @@ async function sceneForest() {
   });
 
   State.film = film;
+  if (!State.dev) {
+    try { localStorage.setItem(FIRST_DOOR_KEY, "1"); } catch (e) {}
+  }
   const door = $(`.door[data-film="${film}"]`);
   const dc = centerOf(door);
   const color = film === "soul" ? "142,230,207" : "240,122,46";
@@ -1031,18 +1039,6 @@ Görüşürüz 🌙`;
   Sound.sfx.chord("today");
 }
 
-async function sceneReturn(saved) {
-  State.film = saved.film;
-  State.dayLong = saved.dayLong;
-  progress(8);
-  setTone("dark");
-  prepareCredits();
-  $(".end-big").textContent = "Biletin hâlâ cebinde.";
-  const f = FILMS[saved.film] || FILMS.soul;
-  $(".end-hand").textContent = `${f.name} · ${saved.dayLong || ""}`;
-  showEnd();
-}
-
 /* =========================================================
    Başlangıç
    ========================================================= */
@@ -1083,7 +1079,6 @@ function wireGlobal() {
 
   const returning = !!(saved && saved.film && !replay);
   await sceneSeal(returning);
-  if (returning) return sceneReturn(saved);
 
   await sceneSpark();
   await sceneHall();
